@@ -1,0 +1,603 @@
+#TO DO 
+#FIX REGISTER WITHOUT 2FA
+#GET CHECKIN/OUT TO WORK
+
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
+import os, io
+from werkzeug.utils import secure_filename
+import csv
+from sqlalchemy import desc, asc
+from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+import secrets
+from flask_mail import Mail
+from flask_mail import Message
+from flask_login import LoginManager, UserMixin
+from flask_login import login_user, current_user, logout_user, login_required
+import random, string
+import base64
+
+
+#twilop test
+from twilio.rest import Client
+
+# account_sid = 'AC537190e407fb0d60aa71f71539d39655'
+# auth_token = '22c56eb1c45766768822d20784357e22'
+# client = Client(account_sid, auth_token)
+
+# message = client.messages.create(
+#   from_='+18886992384',
+#   body="hello!",
+#   to='+15515022520'
+# )
+
+# print(message.sid)
+
+# print(message.sid)
+
+app = Flask(__name__)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login' #specify the login route
+login_manager.login_message = "Unauthorized Access! Log in!!"
+login_manager.login_message_category = "danger"
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USERNAME'] = 'elisewizemann@gmail.com'
+# Consider using app secrets or environment variables
+app.config['MAIL_PASSWORD'] = 'lynh eqzt ssfa wwwu'  
+# Set the default sender
+app.config['MAIL_DEFAULT_SENDER'] = 'emregemici@gmail.com'
+mail = Mail(app)
+
+# Database configuration
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///library.db"
+db = SQLAlchemy(app)
+
+
+# Book model for the library inventory
+class Book(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(50), unique=True)
+    format = db.Column(db.String(50))
+    p_date = db.Column(db.Date)
+    author = db.Column(db.String(50))
+    price = db.Column(db.Float)
+    qty = db.Column(db.Integer)
+    transactions = db.relationship('Transaction', backref='book', lazy=True)
+
+    def __repr__(self):
+        return f"Book: {self.title}"
+
+# user model
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    last_name = db.Column(db.String(255))
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    image_data = (db.Column(db.LargeBinary))
+    email_verification_token = db.Column(db.String(255))
+    is_verified = db.Column(db.Boolean, default=False)
+    MFAcode = db.Column(db.String(255), default=False)
+    MFA = db.Column(db.Boolean, default=False)
+    phoneNumber = db.Column(db.String(255), default = None)
+    transactions = db.relationship('Transaction', backref='user', lazy=True)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
+    check_out = db.Column(db.Boolean, default=False)
+    timestamp = db.Column(db.DateTime, default= datetime.utcnow)
+
+    def __repr__(self):
+        return f"Transaction: {self.user_id} {self.book_id} {self.check_out}"
+
+# Create the database tables
+with app.app_context():
+    db.create_all()
+
+# Define constants
+DEFAULT_BOOKS_PER_PAGE = 10
+
+
+# Generate a Verification Token:
+def generate_verification_token():
+    return secrets.token_urlsafe(50)  # Adjust the token length as needed
+
+
+# Send a Verification Email:
+def send_verification_email(user):
+    verification_link = (
+        f"http://127.0.0.1:5000/verify_email/{user.email_verification_token}"
+    )
+    msg = Message("Verify Your Email", recipients=[user.email])
+    msg.body = f"Click the following link to verify your email: {verification_link}"
+    mail.send(msg)
+
+
+# Function to get the page range for pagination
+def get_page_range(current_page, total_pages, max_page_buttons=5):
+    if total_pages <= max_page_buttons:
+        return range(1, total_pages + 1)
+
+    half_buttons = max_page_buttons // 2
+    if current_page <= half_buttons:
+        return range(1, max_page_buttons + 1)
+
+    if current_page >= total_pages - half_buttons:
+        return range(total_pages - max_page_buttons + 1, total_pages + 1)
+
+    return range(current_page - half_buttons, current_page + half_buttons + 1)
+
+
+# Route for the main page
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+
+# Route for the full inventory
+@app.route("/inventory")
+def inventory():
+    page = request.args.get("page", 1, type=int)
+    books_per_page = request.args.get(
+        "books_per_page", DEFAULT_BOOKS_PER_PAGE, type=int
+    )
+    books = Book.query.order_by(asc(Book.id)).paginate(
+        page=page, per_page=books_per_page, error_out=False
+    )
+    return render_template(
+        "inventory.html",
+        books=books,
+        get_page_range=get_page_range,
+        books_per_page=books_per_page,
+    )
+
+    #proceed with the checkout
+    book.qty -=1
+    transaction = Transaction(user_id = user.id, book_id = book.id, check_out=True)
+    db.session.add(transaction)
+    db.session.commit()
+    flash("Book checked out successfully","success")
+    return redirect(url_for('inventory'))
+
+
+# Route for searching books
+@app.route("/searchbook", methods=["POST", "GET"])
+def searchbook():
+    if request.method == "GET":
+        if request.args:
+            search_text = request.args.get("search_text")
+            search_by = request.args.get("search_by")
+            books = Book.query.filter(
+                getattr(Book, search_by).ilike(f"%{search_text}%")
+            ).all()
+            return render_template("searchbook.html", books=books)
+        return render_template("searchbook.html")
+    elif request.method == "POST":
+        search_text = request.form["search_text"]
+        search_by = request.form["search_by"]
+        return redirect(
+            url_for("searchbook", search_text=search_text, search_by=search_by)
+        )
+
+
+# Route for updating books
+@app.route("/editbook", methods=["POST", "GET"])
+def editbook():
+    if request.method == "GET":
+        if request.args.get("book_id"):
+            book_id = int(request.args.get("book_id"))
+            book = Book.query.get(book_id)
+            return render_template("searchbook.html", book=book)
+        return redirect(url_for("searchbook"))
+    if request.method == "POST":
+        try:
+            id = request.form["book_id"]
+            get_book = Book.query.get(id)
+            get_book.title = request.form["title"]
+            get_book.format = request.form["format"]
+            date_string = request.form["p_date"]
+            date_object = datetime.strptime(date_string, "%Y-%m-%d").date()
+            get_book.p_date = date_object
+            get_book.author = request.form["author"]
+            get_book.price = request.form["price"]
+            get_book.qty = request.form["qty"]
+            db.session.commit()
+            flash("Book updated successfully", "success")
+            return render_template("searchbook.html", book=get_book)
+        except IntegrityError:
+            db.session.rollback()
+            flash("An error occurred. Please try again.", "error")
+            return render_template("searchbook.html")
+
+
+# Route for deleting books
+@app.route("/delete")
+@login_required
+def delete():
+    id = request.args.get("book_id")
+    book_to_delete = Book.query.get(id)
+    db.session.delete(book_to_delete)
+    db.session.commit()
+    flash("Book deleted successfully", "warning")
+    return redirect("/searchbook")
+
+
+# Route for adding books
+@app.route("/addbook", methods=["POST", "GET"])
+def addbook():
+    if request.method == "GET":
+        return render_template("addbook.html", msg="")
+    elif request.method == "POST":
+        try:
+            new_book = Book(
+                title=request.form["title"],
+                format=request.form["format"],
+                p_date=datetime.strptime(request.form["p_date"], "%Y-%m-%d").date(),
+                author=request.form["author"],
+                price=request.form["price"],
+                qty=request.form["qty"],
+            )
+            db.session.add(new_book)
+            db.session.commit()
+            flash("Book added to inventory successfully", "success")
+            return render_template(
+                "addbook.html",
+                msg="The book has been added into the inventory!",
+            )
+        except IntegrityError:
+            db.session.rollback()
+            flash("The book is already in the inventory!", "error")
+            return render_template("addbook.html")
+
+
+# Route for uploading books from CSV
+@app.route("/uploadbook", methods=["GET", "POST"])
+@login_required
+def uploadbook():
+    if request.method == "POST":
+        csv_file = request.files["csv_file"]
+        csv_data = parse_csv_data(csv_file)
+        add_csv_data_to_database(csv_data)
+        flash("Books added from CSV successfully", "success")
+        return render_template(
+            "uploadbook.html",
+            msg="The books have been added into our inventory!",
+        )
+    return render_template("uploadbook.html")
+
+
+# Function to parse CSV data
+def parse_csv_data(csv_file):
+    text_data = csv_file.read().decode("utf-8")
+    reader = csv.reader(io.StringIO(text_data))
+    headers = next(reader)
+    data = [row for row in reader]
+    return data
+
+
+# Function to add CSV data to the database
+def add_csv_data_to_database(csv_data):
+    for book in csv_data:
+        try:
+            new_book = Book(
+                title=book[0],
+                format=book[1],
+                p_date=datetime.strptime(book[2], "%d-%b-%y").date(),
+                author=book[3],
+                price=book[4],
+                qty=book[5],
+            )
+            db.session.add(new_book)
+            db.session.commit()
+        except:
+            db.session.rollback()
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+        user = User.query.filter_by(email=email).first()
+        
+        if user and user.check_password(password):
+            if user.MFA == True or user.MFA == 1:
+                # print('HELLO')
+                session["user_ID"]= user.id
+                return redirect(url_for('MFA'))
+            if not user.email_verification_token:
+                #login logic
+                login_user(user)
+                flash("Logged in successfully!", "success")
+                return redirect(url_for('index'))
+            else:
+                flash("Verify your email!","warning")
+        else:
+            flash("Invalid credentials!","danger")
+    return render_template("login.html")
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("Logged out successfully", "success")
+    return redirect(url_for("index"))
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        # Get form data
+        name = request.form.get("name")
+        last_name = request.form.get("last_name")
+        email = request.form.get("email")
+        password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
+        image_file = request.files.get("image")
+        accept_terms = request.form.get("accept_terms")
+        kMFA = request.form.get("MFA") #THIS IS THE ISSUE
+        MFA = False
+        if kMFA == "on":
+            MFA = True
+        else: 
+            MFA = False
+        # print(MFA)
+        try:
+            phoneNumber = request.form.get("phoneNumber")
+        except:
+            phoneNumber = None
+
+        # Validate form data (add your own validation logic)
+        if not (
+            name
+            and last_name
+            and email
+            and password
+            and confirm_password
+            and image_file
+            and accept_terms
+        ):
+        # Handle invalid input
+            flash("Please fill in all fields.", "danger")
+            return render_template("register.html")
+        #handle if existing user
+        user = User.query.filter_by(email=email).first()
+        if user is not None and email == user.email:
+            # Handle password mismatch
+            flash("User already exist! Try a different email", "danger")
+            return render_template("register.html")
+        if password != confirm_password:
+            # Handle password mismatch
+            flash("Passwords do not match.", "danger")
+            return render_template("register.html")
+
+        # Get image data
+        image_data = image_file.read()
+
+        # Create a new user instance
+        new_user = User(
+            name=name,
+            email=email,
+            image_data=image_data,
+            email_verification_token=generate_verification_token(),
+            MFA = MFA,
+            phoneNumber= phoneNumber
+        )
+        new_user.set_password(password)
+
+        # Save the new user to the database
+        db.session.add(new_user)
+        db.session.commit()
+        
+        # Send the verification email
+        send_verification_email(new_user)
+        
+        flash("Account created successfully! Please check your email to verify.", "success")
+        return redirect(url_for('login'))
+    return render_template("register.html")
+
+# Create an Email Verification Route:
+@app.route("/verify_email/<token>", methods=["GET"])
+def verify_email(token):
+    user = User.query.filter_by(email_verification_token=token).first()
+
+    if user:
+        user.email_verification_token = None  # Mark email as verified
+        # Set a flag or column in the User model to indicate verified status
+        user.is_verified = True  
+        db.session.commit()
+        flash("Email verified successfully!", "success")
+    else:
+        flash("Invalid verification token.", "danger")
+    return redirect(url_for("login"))  # Redirect to login or home page
+
+def getMFA():
+    user_ID = session["user_ID"]
+    user = User.query.filter_by(id=user_ID).first()
+    N = 6
+# using random.choices()
+# generating random strings
+    res = ''.join(random.choices(string.ascii_letters, k=N))
+    user.MFAcode = res
+    # print(res)
+    # print(user.MFA)
+    db.session.commit()
+    return res
+
+#send MFA
+def send_MFA():
+    user_ID = session["user_ID"]
+    user = User.query.filter_by(id=user_ID).first()
+    account_sid = 'AC537190e407fb0d60aa71f71539d39655'
+    auth_token = '22c56eb1c45766768822d20784357e22'
+    MFAcode = getMFA()
+    client = Client(account_sid, auth_token)
+
+    message = client.messages.create(
+    from_='+18886992384',
+    body=f"Your code is {MFAcode}",
+    to=user.phoneNumber
+    )
+
+@app.route("/mfa", methods=["GET","POST"])
+def MFA():
+    user_ID = session["user_ID"]
+    user = User.query.filter_by(id=user_ID).first()
+    if request.method == "GET":
+        send_MFA()
+        return render_template('mfa.html')
+    if request.method == "POST":
+        MFAcode = request.form.get("MFAcode")
+        if MFAcode == user.MFAcode:
+            login_user(user)
+            flash("Logged in successfully!", "success")
+            return redirect(url_for('index'))
+        else:
+            flash("Code incorrect! Check for a new code!")
+            return render_template('mfa.html')
+    
+@app.route("/profile", methods=["GET","POST"])
+@login_required
+def profile():
+    encoded_image_data = base64.b64encode(current_user.image_data).decode('utf-8')
+    transactions = Transaction.query.filter_by(user_id = current_user.id).all()
+    checkin_transaction = Transaction.query.filter_by(check_out = False).all()
+    checkout_transaction = Transaction.query.filter_by(check_out = True).all()
+
+    active_books = set()
+    active_transactions = []
+    for transaction in transactions:
+        book_id = transaction.book.id
+        num_checkout = sum(1 for t in checkout_transaction if t.book_id==book_id)
+        num_checkin = sum(1 for t in checkin_transaction if t.book_id==book_id)
+        if num_checkout > num_checkin:
+            active_books.add(book_id)
+    for transaction in checkout_transaction:
+        if transaction.book.id in active_books:
+            active_transactions.append(transaction)
+            active_books.remove(transaction.book_id)
+    # print((transactions))
+    if request.method == "POST":
+        if "picture_submit" in request.form:
+            try:
+                image_file = request.files.get("imaged")
+            except:
+                flash("Error with the new picture. Make sure to use a png!", "danger")
+                return render_template('profile.html', encoded_image_data=encoded_image_data, list_of_transactions=transactions, active= active_transactions)
+
+            image_data = image_file.read()
+            current_user.image_data = image_data
+            db.session.commit()
+
+            encoded_image_data = base64.b64encode(current_user.image_data).decode('utf-8')
+
+            flash("Account sucessfully updated", "suceess")
+            return render_template('profile.html', encoded_image_data=encoded_image_data, list_of_transactions=transactions, active= active_transactions)
+
+        if "profile_submit" in request.form:   
+            fname = request.form.get("fname")
+            lname = request.form.get("lname")
+            email = request.form.get("email")
+
+            current_user.name=fname
+            current_user.last_name=lname
+            current_user.email=email
+            db.session.commit()
+
+            flash("Account sucessfully updated", "suceess")
+            return render_template('profile.html', encoded_image_data=encoded_image_data, list_of_transactions=transactions, active= active_transactions)
+        
+        if "password_submit" in request.form:
+            pass1 = request.form.get("pass1")
+            pass2 = request.form.get("pass2")
+
+            if pass1 and pass2:
+                if current_user.check_password(pass1):
+                    current_user.set_password(pass2)
+                    db.session.commit()
+                    flash("Password changed!", "suceess")
+                    return render_template('profile.html', encoded_image_data=encoded_image_data, list_of_transactions=transactions, active= active_transactions)
+                else:
+                    flash("Old password is incorrect!", "warning")
+                    return render_template('profile.html', encoded_image_data=encoded_image_data, list_of_transactions=transactions, active= active_transactions)
+            else:
+                flash("Please fill out both password feilds!", "danger")
+                return render_template('profile.html', encoded_image_data=encoded_image_data, list_of_transactions=transactions,active= active_transactions)       
+        
+    return render_template('profile.html', encoded_image_data=encoded_image_data, list_of_transactions=transactions, active= active_transactions)
+
+@app.route("/checkin", methods=['POST'])
+@login_required
+def checkin():
+   user = current_user
+   book_id = request.form.get('book_id')
+   book = Book.query.get(book_id)
+   if book:
+       # existing_transaction = Transaction.query.filter_by(user_id = user.id, book_id = book.id, check_out = True).first()
+       checkin_transaction = Transaction.query.filter_by(user_id = user.id, book_id = book.id, check_out = False).all()
+       checkout_transaction = Transaction.query.filter_by(user_id = user.id, book_id = book.id, check_out = True).all()
+       if len(checkout_transaction) - len(checkin_transaction) == 0:
+           flash("There is no book to check in!", "warning")
+       else:
+           book.qty+=1
+           transaction = Transaction(user_id = user.id, book_id = book.id, check_out = False)
+           db.session.add(transaction)
+           db.session.commit()
+           flash("Book checked in successfully","success")
+       # if not existing_transaction:
+       #     flash("There is no book to check in!", "warning")
+       #     return redirect(url_for('inventory'))
+       # else:
+       #     book.qty+=1
+       #     # transaction = Transaction(user_id = user.id, book_id = book.id, check_out = False)
+       #     # db.session.add(transaction)
+       #     db.session.delete(existing_transaction)  # Remove the existing check-out transaction
+       #     db.session.commit()
+       #     flash("Book checked in successfully","success")
+   return redirect(url_for('inventory'))
+
+@app.route("/checkout", methods=['POST'])
+@login_required
+def checkout():
+   user = current_user
+   book_id = request.form.get('book_id')
+   book = Book.query.get(book_id)
+   if not book:
+       flash('Invalid book selection','danger')
+       return redirect(url_for('inventory'))
+   if book.qty == 0:
+       flash('The book is not available in the inventory!', 'danger')
+       return redirect(url_for('inventory'))
+   #check if the user has already checked out the same book
+   existing_transaction = Transaction.query.filter_by(user_id = user.id, book_id = book.id, check_out = True).first()
+   # if existing_transaction:
+   #     flash("You have already checked out this book!", 'warning')
+   #     return redirect(url_for('inventory'))
+   #proceed with the checkout
+   book.qty -=1
+   transaction = Transaction(user_id = user.id, book_id = book.id, check_out=True)
+   db.session.add(transaction)
+   db.session.commit()
+   flash("Book checked out successfully","success")
+   return redirect(url_for('inventory'))
+
+
+if __name__ == "__main__":
+    app.secret_key = "super_secret_key"  # Change this to a random, secure key
+    app.run(debug=True)
