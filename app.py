@@ -17,3 +17,11 @@ def index():
 if __name__ == "__main__":
     app.secret_key = "super_secret_key" 
     app.run(debug=True, port="8000")
+
+app.route('/inventory')
+def inventory():
+    #plan for this route
+    #when person requests food from a card, post and then add information to a list, then go back to get to display list
+    #edit/get for cart is the thing where submit buttons have different names
+    #seperate route/function for commiting things to DB
+    pass
