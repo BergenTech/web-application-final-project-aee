@@ -24,4 +24,4 @@ def inventory():
     #when person requests food from a card, post and then add information to a list, then go back to get to display list
     #edit/get for cart is the thing where submit buttons have different names
     #seperate route/function for commiting things to DB
-    pass
+    return render_template("inventory.html")
