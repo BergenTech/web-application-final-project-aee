@@ -14,7 +14,6 @@ from flask_mail import Message
 from flask_login import LoginManager, UserMixin
 from flask_login import login_user, current_user, logout_user, login_required
 import random, string
-import base64
 from twilio.rest import Client
 
 
