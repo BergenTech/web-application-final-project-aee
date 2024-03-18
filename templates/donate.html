@@ -1,0 +1,16 @@
+{%extends "base.html"%}
+{%block title%}Donate{%endblock%}
+{%block content%}
+<h1>Donate Items</h1>
+    <form method="post">
+        <div>
+            <label for="item_name">Item Name:</label>
+            <input type="text" id="item_name" name="item_name" required>
+        </div>
+        <div>
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" required>
+        </div>
+        <button type="submit">Donate</button>
+    </form>
+{%endblock%}

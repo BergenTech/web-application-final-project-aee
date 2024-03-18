@@ -1,0 +1,27 @@
+{%extends "base.html"%}
+{%block title%}Donate{%endblock%}
+{%block content%}
+<h1>Admin Panel</h1>
+    
+<h2>Food Inventory:</h2>
+<ul>
+    {% for item in admin_data.inventory %}
+    <li>{{ item }}</li>
+    {% endfor %}
+</ul>
+
+<h2>User Accounts:</h2>
+<ul>
+    {% for user in admin_data.users %}
+    <li>{{ user }}</li>
+    {% endfor %}
+</ul>
+
+<h2>Donations:</h2>
+<ul>
+    {% for donation in admin_data.donations %}
+    <li>{{ donation }}</li>
+    {% endfor %}
+</ul>
+
+{%endblock%}

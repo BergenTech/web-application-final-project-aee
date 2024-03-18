@@ -1,0 +1,20 @@
+{%extends "base.html"%}
+{%block title%}Donate{%endblock%}
+{%block content%}
+<h1>User Profile</h1>
+    
+    <h2>User Details:</h2>
+    <p>Name: {{ user.name }} {{ user.last_name }}</p>
+    <p>Email: {{ user.email }}</p>
+    <p>Phone Number: {{ user.phoneNumber }}</p>
+
+    <h2>Delivery History:</h2>
+    <ul>
+        {% for delivery in deliveries %}
+        <li>
+            Date: {{ delivery.date }} | Item: {{ delivery.item }} | Quantity: {{ delivery.quantity }}
+        </li>
+        {% endfor %}
+    </ul>
+
+{%endblock%}

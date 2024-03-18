@@ -99,11 +99,69 @@ def inventory():
     #when person requests food from a card, post and then add information to a list, then go back to get to display list
     #edit/get for cart is the thing where submit buttons have different names
     #seperate route/function for commiting things to DB
-    return render_template("inventory.html")
+    list = [["https://www.delmonte.com/sites/default/files/NSA%20Corn_1050x500_0.png", "Canned Corn", int(5)],["https://www.delmonte.com/sites/default/files/NSA%20Corn_1050x500_0.png", "Canned Corn", int(5)]]
+    return render_template("inventory.html", list=list)
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+@app.route('/register', methods=["GET", "POST"])
+def register():
+    #Renders the registration form for users to create a new account. Upon successful registration, redirects users to the login page.
+    if request.method == "POST":
+        # Get form data
+        name = request.form.get("name")
+        last_name = request.form.get("last_name")
+        email = request.form.get("email")
+        password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
+        accept_terms = request.form.get("accept_terms")
+        is_mfa_enabled = request.form.get("mfa")
+        phoneNumber = request.form.get("phoneNumber")
+
+        # Validate form data (add your own validation logic)
+        if not (
+            name
+            and last_name
+            and email
+            and password
+            and confirm_password
+            and accept_terms
+        ):
+        # Handle invalid input
+            flash("Please fill in all fields.", "danger")
+            return render_template("register.html")
+        #handle if existing user
+        user = User.query.filter_by(email=email).first()
+        if user is not None and email == user.email:
+            # Handle password mismatch
+            flash("User already exist! Try a different email", "danger")
+            return render_template("register.html")
+        if password != confirm_password:
+            # Handle password mismatch
+            flash("Passwords do not match.", "danger")
+            return render_template("register.html")
+         # Create a new user instance
+        new_user = User(
+            name=name,
+            email=email,
+            email_verification_token=generate_verification_token(),
+            is_mfa_enabled= True if is_mfa_enabled else False,
+            phoneNumber = phoneNumber
+        )
+        new_user.set_password(password)
+
+        # Save the new user to the database
+        db.session.add(new_user)
+        db.session.commit()
+        
+        # Send the verification email
+        send_verification_email(new_user)
+        
+        flash("Account created successfully! Please check your email to verify.", "success")
+        return redirect(url_for('login'))
+    return render_template("register.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -164,52 +222,23 @@ def logout():
     return redirect(url_for("index"))
 
 
-@app.route('/register', methods=["GET", "POST"])
-def register():
-    #Renders the registration form for users to create a new account. Upon successful registration, redirects users to the login page.
-    if request.method == "POST":
-        # Get form data
-        name = request.form.get("name")
-        last_name = request.form.get("last_name")
-        email = request.form.get("email")
-        password = request.form.get("password")
-        confirm_password = request.form.get("confirm_password")
-        accept_terms = request.form.get("accept_terms")
-        is_mfa_enabled = request.form.get("mfa")
-        phoneNumber = request.form.get("phoneNumber")
 
-        # Validate form data (add your own validation logic)
-        if not (
-            name
-            and last_name
-            and email
-            and password
-            and confirm_password
-            and accept_terms
-        ):
-        # Handle invalid input
-            flash("Please fill in all fields.", "danger")
-            return render_template("register.html")
-        #handle if existing user
-        user = User.query.filter_by(email=email).first()
-        if user is not None and email == user.email:
-            # Handle password mismatch
-            flash("User already exist! Try a different email", "danger")
-            return render_template("register.html")
-        if password != confirm_password:
-            # Handle password mismatch
-            flash("Passwords do not match.", "danger")
-            return render_template("register.html")
+@app.route('/dashboard')
+def dashboard():
+    #Displays the personalized dashboard for logged-in users. Shows current donated items, reserved items, and any relevant notifications. Includes links to other functionalities such as donation form, inventory search, and profile management.
+    donated_items = [""]
+    reserved_items = [""]
+    return render_template('dashboard.html', donated_itmes=donated_items, reserved_items=reserved_items)
 
-@app.route('/dahsboard')
-def dahsboard():
-    #Displays the personalized dashboard for logged-in users. Shows current food items in the pantry, reserved items, and any relevant notifications. Includes links to other functionalities such as donation form, inventory search, and profile management.
-    return render_template('register.html')
-
-@app.route('/donate')
+@app.route('/donate', methods=['GET','POST'])
 def donate():
     #Renders the donation form for users to list items they want to donate. Upon submission, processes the donation and updates the inventory accordingly. Redirects users back to the dashboard with a success message.
-    return render_template('dahsboard.html')
+    if request.method == 'POST':
+        item_name = request.form.get('item_name')
+        quantity = request.form.get('quantity')
+        flash ('Donation successful!','success')
+        return redirect(url_for('dashboard'))
+    return render_template('donate.html')
 
 @app.route('/search')
 def search():
@@ -217,9 +246,11 @@ def search():
     return render_template('search.html')
 
 @app.route('/profile')
+
 def profile():
+    user=current_user
     #Renders the user profile page where users can view and edit their account information. Includes sections for current deliveries, scheduled deliveries, delivery history, and edit profile details.
-    return render_template('profile.html')
+    return render_template('profile.html', user=user)
 
 @app.route('/admin')
 def admin():

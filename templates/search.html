@@ -1,0 +1,15 @@
+{%extends "base.html"%}
+{%block title%}Search{%endblock%}
+{%block content%}
+<h1>Search Results</h1>
+    
+<h2>Food Pantries Near You:</h2>
+<ul>
+    {% for result in search_results %}
+    <li>
+        <strong>{{ result.name }}</strong> - {{ result.location }}
+        <!-- add more details or functionality for each search result -->
+    </li>
+    {% endfor %}
+</ul>
+{%endblock%}
