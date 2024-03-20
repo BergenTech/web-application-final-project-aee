@@ -93,12 +93,17 @@ def send_mfa(code):
 def index():
     return render_template("index.html")
 
-@app.route('/inventory')
+@app.route('/inventory', methods=["POST","GET"])
 def inventory():
     #plan for this route
     #when person requests food from a card, post and then add information to a list, then go back to get to display list
     #edit/get for cart is the thing where submit buttons have different names
     #seperate route/function for commiting things to DB
+    if request.method == "POST":
+        if "food_picked" in request.form:
+            item = request.form.get("item")
+            qty = request.form.get("quanity")
+
     list = [["https://www.delmonte.com/sites/default/files/NSA%20Corn_1050x500_0.png", "Canned Corn", int(5)],["https://www.delmonte.com/sites/default/files/NSA%20Corn_1050x500_0.png", "Canned Corn", int(5)]]
     return render_template("inventory.html", list=list)
 

@@ -29,6 +29,7 @@
                   <span class="fs-5">Your Cart</span>
               </a>
               <ul class="nav nav-pills flex-sm-column flex-row flex-nowrap flex-shrink-1 flex-sm-grow-0 flex-grow-1 mb-sm-auto mb-0 justify-content-center align-items-center align-items-sm-start" id="menu">
+                <form action="/inventory" method="POST">
                   <li class="nav-item">
                     <div class="container">
                       <div class="card row">
@@ -39,8 +40,9 @@
                     </div>
                   </li>
                   <li>
-                    <button type="submit" class="btn btn-success">Check Out</button>
+                    <button type="submit" class="btn btn-success" name="checkout">Check Out</button>
                   </li>
+                </form>
               </ul>
           </div>
       </div>
@@ -50,13 +52,13 @@
           <div class="card col">
             <img src="https://www.delmonte.com/sites/default/files/NSA%20Corn_1050x500_0.png" alt="Avatar" style="object-fit:contain;" width ="50%">
             <div class="container bg-secondary p-3">
-              <h4><b>Canned corn</b></h4>
-              <form action="/##">
+              <form action="/inventory" methods="POST">
+                <h4 name="item"><b>Canned corn</b></h4>
                 <label for="quantity">Quantity:</label>
                 <p>Request:</p>
                 <input type="number" id="quantity" name="quantity" min="0" max="100" step="1" value="0">
                 <br>
-                <input type="submit" value="Submit">
+                <input type="submit" value="Submit" name="food_picked">
             </form>
       
             </div>
