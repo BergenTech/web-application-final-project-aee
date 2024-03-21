@@ -1,4 +1,6 @@
 #imports
+from databases import *
+
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
@@ -95,17 +97,26 @@ def index():
 
 @app.route('/inventory', methods=["POST","GET"])
 def inventory():
+    invent_list = [["https://www.delmonte.com/sites/default/files/NSA%20Corn_1050x500_0.png", "Canned Corn", int(5)],["https://www.delmonte.com/sites/default/files/NSA%20Corn_1050x500_0.png", "Canned Corn", int(5)]]
+    cart=[]
+    # print("HELLO")
     #plan for this route
     #when person requests food from a card, post and then add information to a list, then go back to get to display list
     #edit/get for cart is the thing where submit buttons have different names
     #seperate route/function for commiting things to DB
     if request.method == "POST":
+        print("AHH")
         if "food_picked" in request.form:
+            print("DLSHFDKSHF")
             item = request.form.get("item")
+            print(item)
             qty = request.form.get("quanity")
+            cart.append(item)
+            print(cart)
+        if "checkout" in request.form:
+            flash(f"Requested {cart}", "success")
 
-    list = [["https://www.delmonte.com/sites/default/files/NSA%20Corn_1050x500_0.png", "Canned Corn", int(5)],["https://www.delmonte.com/sites/default/files/NSA%20Corn_1050x500_0.png", "Canned Corn", int(5)]]
-    return render_template("inventory.html", list=list)
+    return render_template("inventory.html", invent_list=invent_list, cart=cart)
 
 @login_manager.user_loader
 def load_user(user_id):

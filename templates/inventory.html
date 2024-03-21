@@ -32,11 +32,11 @@
                 <form action="/inventory" method="POST">
                   <li class="nav-item">
                     <div class="container">
+                      {%for thing in cart%}
                       <div class="card row">
-                        <div class="col">pic</div>
-                        <div class="col"> gernal info</div>
-                        <div class="col">remove/edit</div>
+                        <div class="col">{{thing}}</div>
                       </div>
+                      {%endfor%}
                     </div>
                   </li>
                   <li>
@@ -48,17 +48,17 @@
       </div>
       <div class="col d-flex flex-column h-100">
         <div class="row">
-          {%for thing in list%}
+          {%for thing in invent_list%}
           <div class="card col">
             <img src="https://www.delmonte.com/sites/default/files/NSA%20Corn_1050x500_0.png" alt="Avatar" style="object-fit:contain;" width ="50%">
             <div class="container bg-secondary p-3">
-              <form action="/inventory" methods="POST">
+              <form action="/inventory" method="POST">
                 <h4 name="item"><b>Canned corn</b></h4>
                 <label for="quantity">Quantity:</label>
                 <p>Request:</p>
                 <input type="number" id="quantity" name="quantity" min="0" max="100" step="1" value="0">
                 <br>
-                <input type="submit" value="Submit" name="food_picked">
+                <button type="submit" class="btn btn-success" name="food_picked">Submit</button>
             </form>
       
             </div>
