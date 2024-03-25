@@ -1,6 +1,4 @@
 #imports
-from databases import *
-
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
@@ -61,6 +59,25 @@ class User(db.Model, UserMixin):
         return check_password_hash(self.password_hash, password)
 
 
+class Inventory(db.Model):
+    id= db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    description = db.Column(db.String)
+    qty = db.Column(db.Integer)
+    bank = db.Column(db.String)
+
+    def __repr__(self):
+        db.create.all()
+
+#Donation model
+class Donation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    item_name = db.Column(db.String(100), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f"Donation(id={self.id}, item_name='{self.item_name}', quantity={self.quantity})"
+
 # Create the database tables
 with app.app_context():
     db.create_all()
@@ -68,7 +85,6 @@ with app.app_context():
 # Generate a Verification Token:
 def generate_verification_token():
     return secrets.token_urlsafe(50)  # Adjust the token length as needed
-
 
 # Send a Verification Email:
 def send_verification_email(user):
@@ -111,10 +127,12 @@ def inventory():
             item = request.form.get("item")
             print(item)
             qty = request.form.get("quanity")
-            cart.append(item)
+            cart.append(item, qty)
+            flash(f"Added {qty} {item} to cart", "success")
             print(cart)
         if "checkout" in request.form:
             flash(f"Requested {cart}", "success")
+            cart=[]
 
     return render_template("inventory.html", invent_list=invent_list, cart=cart)
 
@@ -237,8 +255,6 @@ def logout():
     flash("Logged out successfully", "success")
     return redirect(url_for("index"))
 
-
-
 @app.route('/dashboard')
 def dashboard():
     #Displays the personalized dashboard for logged-in users. Shows current donated items, reserved items, and any relevant notifications. Includes links to other functionalities such as donation form, inventory search, and profile management.
@@ -252,17 +268,47 @@ def donate():
     if request.method == 'POST':
         item_name = request.form.get('item_name')
         quantity = request.form.get('quantity')
-        flash ('Donation successful!','success')
-        return redirect(url_for('dashboard'))
+        # Validate form data
+        if not (item_name and quantity):
+            flash("Please fill in all fields.", "danger")
+            return redirect(url_for('donate'))
+
+        try:
+            # Create a new donation instance
+            new_donation = Donation(item_name=item_name, quantity=quantity)
+
+            # Save the new donation to the database
+            db.session.add(new_donation)
+            db.session.commit()
+
+            flash("Donation successful! Thank you for your contribution.", "success")
+            return redirect(url_for('dashboard'))  # Redirect to dashboard or another appropriate page
+        except Exception as e:
+            # Handle database errors or other exceptions
+            flash("An error occurred while processing your donation. Please try again later.", "danger")
+            app.logger.error(f"Error processing donation: {e}")
+            return redirect(url_for('donate'))
     return render_template('donate.html')
 
-@app.route('/search')
+@app.route('/search', methods=['GET','POST'])
 def search():
-    #Renders the search page where users can search for nearby food pantries or specific items. Displays search results and allows users to view details of each pantry or item.
+    if request.method == 'POST':
+        #Search logic here
+            search_query = request.form.get('search_query')
+
+        # Placeholder example for search results
+        # Replace this with actual search functionality based on your application's requirements
+        # For demonstration purposes, we're just returning some dummy search results
+            search_results = [
+                {'name': 'Food Pantry 1', 'location': '123 Main Street'},
+                {'name': 'Food Pantry 2', 'location': '456 Elm Street'},
+            {   'name': 'Food Pantry 3', 'location': '789 Oak Street'}
+        ]
+
+            return render_template('search.html', search_results=search_results)    
     return render_template('search.html')
 
 @app.route('/profile')
-
 def profile():
     user=current_user
     #Renders the user profile page where users can view and edit their account information. Includes sections for current deliveries, scheduled deliveries, delivery history, and edit profile details.
@@ -273,6 +319,36 @@ def admin():
     #Accessible only to admin users. Renders the admin panel with functionalities for managing food inventory, user accounts, donations, and generating reports. Includes forms and tools for adding or deleting items, managing users, and monitoring activity.
     return render_template('admin.html')
 
+def readFile():
+    with open("static\csvFile.csv", 'r') as file:
+    # Create a CSV reader object
+        csv_reader = csv.reader(file)
+        headers = next(csv_reader)
+        data = [row for row in csv_reader]
+        print("file read!")
+        return data
+
+def addInvetnory(data):
+    for row in data:
+        try:
+            new_item = Inventory(
+                name=row[0],
+                description=row[1],
+                qty=row[2],
+                bank=row[3],
+            )
+            db.session.add(new_item)
+            db.session.commit()
+        except:
+            db.session.rollback()
+    print("yay it worked")
+
+app.route('/csv', methods=["GET", "POST"])
+def upload():
+    if request.method == "POST":
+        data = readFile()
+        blah = addInvetnory(data)
+    return render_template("csv.html")
 
 if __name__ == "__main__":
     app.secret_key = "super_secret_key" 
