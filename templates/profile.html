@@ -1,20 +1,30 @@
 {%extends "base.html"%}
-{%block title%}Donate{%endblock%}
+{%block title%}Profile{%endblock%}
 {%block content%}
-<h1>User Profile</h1>
-    
-    <h2>User Details:</h2>
-    <p>Name: {{ user.name }} {{ user.last_name }}</p>
-    <p>Email: {{ user.email }}</p>
-    <p>Phone Number: {{ user.phoneNumber }}</p>
+<h1>Welcome, {{ user.name }}!</h1>
+<h2>User Profile</h2>
+<p>Email: {{ user.email }}</p>
 
-    <h2>Delivery History:</h2>
+<h2>Donated Items</h2>
+{% if donated_items %}
     <ul>
-        {% for delivery in deliveries %}
-        <li>
-            Date: {{ delivery.date }} | Item: {{ delivery.item }} | Quantity: {{ delivery.quantity }}
-        </li>
+        {% for item in donated_items %}
+            <li>{{ item.item_name }} - Quantity: {{ item.quantity }}</li>
         {% endfor %}
     </ul>
+{% else %}
+    <p>No donated items yet.</p>
+{% endif %}
+
+<h2>Reserved Items</h2>
+{% if reserved_items %}
+    <ul>
+        {% for item in reserved_items %}
+            <li>{{ item.item_name }} - Quantity: {{ item.quantity }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No reserved items yet.</p>
+{% endif %}
 
 {%endblock%}

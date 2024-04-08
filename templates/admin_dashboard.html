@@ -1,0 +1,57 @@
+{%extends "base.html"%}
+{%block title%}Admin Dashboard{%endblock%}
+{%block content%}
+<h1>Pending Donations</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Item Name</th>
+            <th>Quantity</th>
+            <th>Description</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for donation in pending_donations %}
+        <tr>
+            <td>{{ donation.item_name }}</td>
+            <td>{{ donation.quantity }}</td>
+            <td>{{ donation.description }}</td>
+            <td>
+                <form method="post" action="{{ url_for('admin_approve_donation', donation_id=donation.id) }}">
+                    <button type="submit">Approve</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h1>User Management</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.name }}</td>
+            <td>{{ user.last_name }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+                <a href="{{ url_for('admin_edit_user', user_id=user.id) }}">Edit</a> |
+                <form method="post" action="{{ url_for('admin_delete_user', user_id=user.id) }}" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                    <button type="submit" class="btn">Delete</button>
+                </form>            
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{%endblock%}

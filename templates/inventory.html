@@ -49,14 +49,16 @@
       <div class="col d-flex flex-column h-100">
         <div class="row">
           {%for thing in invent_list%}
-          <div class="card col">
-            <img src="https://www.delmonte.com/sites/default/files/NSA%20Corn_1050x500_0.png" alt="Avatar" style="object-fit:contain;" width ="50%">
+
+          <div class="card col-4">
+            <!-- <img src="https://www.delmonte.com/sites/default/files/NSA%20Corn_1050x500_0.png" alt="Avatar" style="object-fit:contain;" width ="50%"> -->
             <div class="container bg-secondary p-3">
               <form action="/inventory" method="POST">
-                <h4 name="item"><b>Canned corn</b></h4>
-                <label for="quantity">Quantity:</label>
+                <input type="hidden" name="item" value="{{ thing.name }}">
+                <h4>{{ thing.name }}</h4>
+                <label for="qty">Quantity: {{thing.qty}}</label>
                 <p>Request:</p>
-                <input type="number" id="quantity" name="quantity" min="0" max="100" step="1" value="0">
+                <input type="number" id="qty" name="qty" min="0" max="100" step="1" value="0">
                 <br>
                 <!-- Button trigger modal -->
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -68,11 +70,11 @@
                   <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">{{thing.name}}</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
-                        ...
+                        {{thing.description}}
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

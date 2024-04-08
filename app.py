@@ -74,6 +74,8 @@ class Donation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     item_name = db.Column(db.String(100), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
+    description = db.Column(db.String(255))  # Add description field
+    status = db.Column(db.String(20), default='pending')  # Add status field (pending, approved, arrived)
 
     def __repr__(self):
         return f"Donation(id={self.id}, item_name='{self.item_name}', quantity={self.quantity})"
@@ -86,10 +88,23 @@ with app.app_context():
 def generate_verification_token():
     return secrets.token_urlsafe(50)  # Adjust the token length as needed
 
+@app.route("/verify_email/<token>", methods=["GET"])
+def verify_email(token):
+    user = User.query.filter_by(email_verification_token=token).first()
+    if user:
+        user.email_verification_token = None  # Mark email as verified
+        # Set a flag or column in the User model to indicate verified status
+        user.is_verified = True  
+        db.session.commit()
+        flash("Email verified successfully!", "success")
+    else:
+        flash("Invalid verification token.", "danger")
+    return redirect(url_for("login"))  # Redirect to login or home page
+
 # Send a Verification Email:
 def send_verification_email(user):
     verification_link = (
-        f"http://127.0.0.1:5000/verify_email/{user.email_verification_token}"
+        f"http://127.0.0.1:8000/verify_email/{user.email_verification_token}"
     )
     msg = Message("Verify Your Email", recipients=[user.email])
     msg.body = f"Click the following link to verify your email: {verification_link}"
@@ -111,9 +126,10 @@ def send_mfa(code):
 def index():
     return render_template("index.html")
 
+
 @app.route('/inventory', methods=["POST","GET"])
 def inventory():
-    invent_list = [["https://www.delmonte.com/sites/default/files/NSA%20Corn_1050x500_0.png", "Canned Corn", int(5)],["https://www.delmonte.com/sites/default/files/NSA%20Corn_1050x500_0.png", "Canned Corn", int(5)]]
+    all_inventory = Inventory.query.all()
     cart=[]
     # print("HELLO")
     #plan for this route
@@ -121,20 +137,21 @@ def inventory():
     #edit/get for cart is the thing where submit buttons have different names
     #seperate route/function for commiting things to DB
     if request.method == "POST":
-        print("AHH")
         if "food_picked" in request.form:
-            print("DLSHFDKSHF")
             item = request.form.get("item")
-            print(item)
-            qty = request.form.get("quanity")
-            cart.append(item, qty)
+            object = Inventory.query.filter_by(name=item).first()
+            qty = int(request.form.get("qty"))
+            if qty > object.qty:
+                flash(f"Please request a less than or equal amount of {item}'s quanity of {object.qty}")
+                return render_template("inventory.html", invent_list=all_inventory, cart=cart)
+            cart.append([item, qty])
             flash(f"Added {qty} {item} to cart", "success")
             print(cart)
         if "checkout" in request.form:
-            flash(f"Requested {cart}", "success")
+            flash(f"Requested 2 boxed pasta from default bank", "success")
             cart=[]
 
-    return render_template("inventory.html", invent_list=invent_list, cart=cart)
+    return render_template("inventory.html", invent_list=all_inventory, cart=cart)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -255,19 +272,19 @@ def logout():
     flash("Logged out successfully", "success")
     return redirect(url_for("index"))
 
-@app.route('/dashboard')
-def dashboard():
-    #Displays the personalized dashboard for logged-in users. Shows current donated items, reserved items, and any relevant notifications. Includes links to other functionalities such as donation form, inventory search, and profile management.
-    donated_items = [""]
-    reserved_items = [""]
-    return render_template('dashboard.html', donated_itmes=donated_items, reserved_items=reserved_items)
+def send_donation_notification_to_admin(donation):
+    admin_email = "mseceberrak@gmail.com"  # Replace with actual admin email
+    msg = Message("New Pending Donation", recipients=[admin_email])
+    msg.body = f"New pending donation:\nItem: {donation.item_name}\nQuantity: {donation.quantity}\nDescription: {donation.description}"
+    mail.send(msg)
 
 @app.route('/donate', methods=['GET','POST'])
 def donate():
-    #Renders the donation form for users to list items they want to donate. Upon submission, processes the donation and updates the inventory accordingly. Redirects users back to the dashboard with a success message.
     if request.method == 'POST':
         item_name = request.form.get('item_name')
         quantity = request.form.get('quantity')
+        description = request.form.get('description')
+
         # Validate form data
         if not (item_name and quantity):
             flash("Please fill in all fields.", "danger")
@@ -275,20 +292,25 @@ def donate():
 
         try:
             # Create a new donation instance
-            new_donation = Donation(item_name=item_name, quantity=quantity)
+            new_donation = Donation(item_name=item_name, quantity=quantity, description=description)
 
             # Save the new donation to the database
             db.session.add(new_donation)
             db.session.commit()
+            
+            send_donation_notification_to_admin(new_donation)
+
 
             flash("Donation successful! Thank you for your contribution.", "success")
-            return redirect(url_for('dashboard'))  # Redirect to dashboard or another appropriate page
+            return redirect("/profile")  
         except Exception as e:
             # Handle database errors or other exceptions
             flash("An error occurred while processing your donation. Please try again later.", "danger")
             app.logger.error(f"Error processing donation: {e}")
             return redirect(url_for('donate'))
     return render_template('donate.html')
+
+
 
 @app.route('/search', methods=['GET','POST'])
 def search():
@@ -309,15 +331,57 @@ def search():
     return render_template('search.html')
 
 @app.route('/profile')
+@login_required
 def profile():
     user=current_user
-    #Renders the user profile page where users can view and edit their account information. Includes sections for current deliveries, scheduled deliveries, delivery history, and edit profile details.
-    return render_template('profile.html', user=user)
+    donated_items = Donation.query.filter_by(user_id=user).all()  # Fetch donated items by the current user
+    reserved_items = []  # Placeholder for reserved items (implement logic to fetch reserved items)
+    return render_template('profile.html', user=user, donated_items=donated_items, reserved_items=reserved_items)
 
+
+# Admin Dashboard Route
 @app.route('/admin')
-def admin():
-    #Accessible only to admin users. Renders the admin panel with functionalities for managing food inventory, user accounts, donations, and generating reports. Includes forms and tools for adding or deleting items, managing users, and monitoring activity.
-    return render_template('admin.html')
+def admin_dashboard():
+    pending_donations = Donation.query.filter_by(status='pending').all()
+    users = User.query.all()
+
+    return render_template('admin_dashboard.html', pending_donations=pending_donations, users=users)
+
+@app.route('/admin/edit_user/<int:user_id>', methods=['GET', 'POST'])
+def admin_edit_user(user_id):
+    user = User.query.get_or_404(user_id)
+    if request.method == 'POST':
+        user.name = request.form['name']
+        user.last_name = request.form['last_name']
+        user.email = request.form['email']
+        db.session.commit()
+        flash('User details updated successfully!', 'success')
+        return redirect(url_for('admin_dashboard'))
+    return render_template('edit_user.html', user=user)
+
+@app.route('/admin/delete_user/<int:user_id>', methods=['POST'])
+def admin_delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    db.session.delete(user)
+    db.session.commit()
+    flash('User deleted successfully!', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+# Admin Approve Donation Route
+@app.route('/admin/approve_donation/<int:donation_id>', methods=['POST'])
+def admin_approve_donation(donation_id):
+    donation = Donation.query.get_or_404(donation_id)
+    donation.status = 'approved'
+    # Update inventory
+    inventory_item = Inventory.query.filter_by(name=donation.item_name).first()
+    if inventory_item:
+        inventory_item.qty += donation.quantity
+    else:
+        inventory_item = Inventory(name=donation.item_name, qty=donation.quantity)
+        db.session.add(inventory_item)
+    db.session.commit()
+    flash('Donation approved and inventory updated successfully!', 'success')
+    return redirect(url_for('admin_dashboard'))
 
 def readFile():
     with open("static\csvFile.csv", 'r') as file:
@@ -339,11 +403,12 @@ def addInvetnory(data):
             )
             db.session.add(new_item)
             db.session.commit()
+            print("Added item")
         except:
             db.session.rollback()
     print("yay it worked")
 
-app.route('/csv', methods=["GET", "POST"])
+@app.route('/csv', methods=["GET", "POST"])
 def upload():
     if request.method == "POST":
         data = readFile()
