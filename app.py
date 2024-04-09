@@ -32,7 +32,7 @@ app.config['MAIL_USERNAME'] = 'emregemici@gmail.com'
 # Consider using app secrets or environment variables
 app.config['MAIL_PASSWORD'] = 'cxke ztxi bhac vqim'  
 # Set the default sender
-app.config['MAIL_DEFAULT_SENDER'] = 'eceber25@bergen.org'
+app.config['MAIL_DEFAULT_SENDER'] = 'emregemici@gmail.com'
 mail = Mail(app)
 
 # Database configuration
@@ -62,7 +62,6 @@ class User(db.Model, UserMixin):
 class Inventory(db.Model):
     id= db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    description = db.Column(db.String)
     qty = db.Column(db.Integer)
     bank = db.Column(db.String)
 
@@ -79,6 +78,14 @@ class Donation(db.Model):
 
     def __repr__(self):
         return f"Donation(id={self.id}, item_name='{self.item_name}', quantity={self.quantity})"
+
+class Request(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
+    requested_food = db.Column(db.String(100), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    message = db.Column(db.Text, nullable=False)
 
 # Create the database tables
 with app.app_context():
@@ -126,16 +133,11 @@ def send_mfa(code):
 def index():
     return render_template("index.html")
 
-
 @app.route('/inventory', methods=["POST","GET"])
+@login_required
 def inventory():
     all_inventory = Inventory.query.all()
-    cart=[]
-    # print("HELLO")
-    #plan for this route
-    #when person requests food from a card, post and then add information to a list, then go back to get to display list
-    #edit/get for cart is the thing where submit buttons have different names
-    #seperate route/function for commiting things to DB
+    cart = session.get('cart', [])
     if request.method == "POST":
         if "food_picked" in request.form:
             item = request.form.get("item")
@@ -143,14 +145,32 @@ def inventory():
             qty = int(request.form.get("qty"))
             if qty > object.qty:
                 flash(f"Please request a less than or equal amount of {item}'s quanity of {object.qty}")
+                session['cart'] = cart
                 return render_template("inventory.html", invent_list=all_inventory, cart=cart)
             cart.append([item, qty])
             flash(f"Added {qty} {item} to cart", "success")
-            print(cart)
         if "checkout" in request.form:
-            flash(f"Requested 2 boxed pasta from default bank", "success")
-            cart=[]
-
+            for item in cart:
+                user_ID = session["user_ID"]
+                user = User.query.filter_by(id=user_ID).first()
+                email= user.email
+                try:
+                    new_donation = Request(name=item[0], quantity=item[1],)
+                    # Save the new donation to the database
+                    db.session.add(new_donation)
+                    db.session.commit()
+                    send_donation_notification_to_admin(new_donation)
+                except:
+                    flash("There was an issue somewhere", "danger")
+            flash(f"Requested your items from default bank", "success")
+            session['cart'].clear()
+        if "delete" in request.form:
+            name = request.form.get("item")
+            # book_to_delete = Book.query.get(id)
+            # db.session.delete(book_to_delete)
+            # db.session.commit()
+            pass
+    session['cart'] = cart
     return render_template("inventory.html", invent_list=all_inventory, cart=cart)
 
 @login_manager.user_loader
@@ -196,6 +216,7 @@ def register():
          # Create a new user instance
         new_user = User(
             name=name,
+            last_name=last_name,
             email=email,
             email_verification_token=generate_verification_token(),
             is_mfa_enabled= True if is_mfa_enabled else False,
@@ -310,9 +331,7 @@ def donate():
             return redirect(url_for('donate'))
     return render_template('donate.html')
 
-
-
-@app.route('/search', methods=['GET','POST'])
+@app.route('/search', methods=['GET','POST'], inventory_items=inventory_items)
 def search():
     if request.method == 'POST':
         #Search logic here
@@ -343,6 +362,7 @@ def profile():
 @app.route('/admin')
 def admin_dashboard():
     pending_donations = Donation.query.filter_by(status='pending').all()
+    requested_donations = Request.query.filter_by(status='pending').all()
     users = User.query.all()
 
     return render_template('admin_dashboard.html', pending_donations=pending_donations, users=users)

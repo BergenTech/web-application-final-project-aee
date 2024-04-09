@@ -35,6 +35,7 @@
                       {%for thing in cart%}
                       <div class="card row">
                         <div class="col">{{thing}}</div>
+                        <div class="col">{{thing}}</div>
                       </div>
                       {%endfor%}
                     </div>
@@ -61,20 +62,20 @@
                 <input type="number" id="qty" name="qty" min="0" max="100" step="1" value="0">
                 <br>
                 <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal{{ loop.index }}">
                   More details
                 </button>
 
                 <!-- Modal -->
-                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade" id="exampleModal{{ loop.index }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                   <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">{{thing.name}}</h1>
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">{{ thing.name }}</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
-                        {{thing.description}}
+                        {{ thing.description }}
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
