@@ -9,22 +9,42 @@
 {% if donated_items %}
     <ul>
         {% for item in donated_items %}
-            <li>{{ item.item_name }} - Quantity: {{ item.quantity }}</li>
+            <li>{{ item.item_name }} - Quantity: {{ item.quantity }} - Status: {{ item.status }}</li>
         {% endfor %}
     </ul>
 {% else %}
     <p>No donated items yet.</p>
 {% endif %}
 
-<h2>Reserved Items</h2>
-{% if reserved_items %}
+<h2>Requested Items</h2>
+{% if requested_items %}
     <ul>
-        {% for item in reserved_items %}
-            <li>{{ item.item_name }} - Quantity: {{ item.quantity }}</li>
+        {% for item in requested_items %}
+            <li>{{ item.requested_food }} - Quantity: {{ item.quantity }} - Status: {{ item.status }}</li>
         {% endfor %}
     </ul>
 {% else %}
-    <p>No reserved items yet.</p>
+    <p>No requested items yet.</p>
 {% endif %}
+
+<h2>Edit Profile</h2>
+<form method="post" action="{{ url_for('profile') }}" enctype="multipart/form-data">
+    <label for="profile_picture">Profile Picture:</label>
+    <input type="file" id="profile_picture" name="profile_picture">
+    <br>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" value="{{ user.name }}">
+    <br>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" value="{{ user.email }}">
+    <br>
+    <label for="password">New Password:</label>
+    <input type="password" id="password" name="password">
+    <br>
+    <label for="confirm_password">Confirm New Password:</label>
+    <input type="password" id="confirm_password" name="confirm_password">
+    <br>
+    <button type="submit">Save Changes</button>
+</form>
 
 {%endblock%}

@@ -39,6 +39,9 @@ mail = Mail(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///library.db"
 db = SQLAlchemy(app)
 
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 #user model
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -63,6 +66,7 @@ class Inventory(db.Model):
     id= db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     qty = db.Column(db.Integer)
+    description = db.Column(db.String(255)) 
     bank = db.Column(db.String)
 
     def __repr__(self):
@@ -73,19 +77,19 @@ class Donation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     item_name = db.Column(db.String(100), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
-    description = db.Column(db.String(255))  # Add description field
-    status = db.Column(db.String(20), default='pending')  # Add status field (pending, approved, arrived)
+    description = db.Column(db.String(255))  
+    status = db.Column(db.String(20), default='pending')
+
 
     def __repr__(self):
-        return f"Donation(id={self.id}, item_name='{self.item_name}', quantity={self.quantity})"
+        return f"Donation(id={self.id}, item_name='{self.item_name}', quantity={self.quantity}), description={self.description}"
 
 class Request(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     requested_food = db.Column(db.String(100), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
-    message = db.Column(db.Text, nullable=False)
+    
 
 # Create the database tables
 with app.app_context():
@@ -149,27 +153,40 @@ def inventory():
                 return render_template("inventory.html", invent_list=all_inventory, cart=cart)
             cart.append([item, qty])
             flash(f"Added {qty} {item} to cart", "success")
-        if "checkout" in request.form:
+        elif "checkout" in request.form:
             for item in cart:
-                user_ID = session["user_ID"]
-                user = User.query.filter_by(id=user_ID).first()
-                email= user.email
+                id = current_user.id
                 try:
-                    new_donation = Request(name=item[0], quantity=item[1],)
+                    new_request = Request(requested_food=item[0], quantity=item[1], email=current_user.email)
                     # Save the new donation to the database
-                    db.session.add(new_donation)
+                    db.session.add(new_request)
+                    print('almost')
                     db.session.commit()
-                    send_donation_notification_to_admin(new_donation)
-                except:
+                    print('committed!!!')
+                    send_donation_notification_to_admin(new_request)
+                    print('aaaaaaaaaaa')
+                except Exception as e:
+                    print('Error:', str(e))
+                    db.session.rollback()
                     flash("There was an issue somewhere", "danger")
             flash(f"Requested your items from default bank", "success")
             session['cart'].clear()
-        if "delete" in request.form:
+        elif "delete" in request.form:
             name = request.form.get("item")
             # book_to_delete = Book.query.get(id)
             # db.session.delete(book_to_delete)
             # db.session.commit()
             pass
+        elif "search" in request.form:
+            search_text = request.form["search_text"]
+            search_by = request.form["search_by"]
+            all_inventory = Inventory.query.filter(
+                getattr(Inventory, search_by).ilike(f"%{search_text}%")
+            ).all()
+            return render_template("inventory.html", invent_list=all_inventory, cart=cart)
+
+            
+            
     session['cart'] = cart
     return render_template("inventory.html", invent_list=all_inventory, cart=cart)
 
@@ -245,7 +262,7 @@ def login():
         if user and user.check_password(password):
             if not user.email_verification_token:
                 if user.is_mfa_enabled:
-                    session['user_id'] =user.id
+                    session["user_ID"]= user.id
                     # Generate a random 6-digit integer
                     code = random.randint(100000, 999999)
                     user.mfa_code = code
@@ -255,6 +272,7 @@ def login():
                     return render_template("verify_mfa.html")
                 else:
                     login_user(user)
+                    session['user_ID'] =user.id
                     flash("Logged in successfully!", "success")
                     return redirect(url_for('index'))
             else:
@@ -323,7 +341,11 @@ def donate():
 
 
             flash("Donation successful! Thank you for your contribution.", "success")
-            return redirect("/profile")  
+            user = current_user
+            donated_items = Donation.query.filter_by(id=user.id).all() 
+            requested_items = Request.query.filter_by(email=user.email).all()
+            
+            return redirect("/profile", user=user, donated_items=donated_items, requested_items=requested_items) 
         except Exception as e:
             # Handle database errors or other exceptions
             flash("An error occurred while processing your donation. Please try again later.", "danger")
@@ -331,7 +353,7 @@ def donate():
             return redirect(url_for('donate'))
     return render_template('donate.html')
 
-@app.route('/search', methods=['GET','POST'], inventory_items=inventory_items)
+@app.route('/search', methods=['GET','POST'])
 def search():
     if request.method == 'POST':
         #Search logic here
@@ -349,12 +371,37 @@ def search():
             return render_template('search.html', search_results=search_results)    
     return render_template('search.html')
 
-@app.route('/profile')
+def save_profile_picture(profile_picture):
+    filename = secure_filename(profile_picture.filename)
+    profile_picture.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    return filename
+
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-    user=current_user
-    donated_items = Donation.query.filter_by(user_id=user).all()  # Fetch donated items by the current user
-    reserved_items = []  # Placeholder for reserved items (implement logic to fetch reserved items)
+    user = current_user
+    
+    if not user.is_authenticated:
+        return redirect(url_for('login'))
+    
+    donated_items = Donation.query.filter_by(id=user.id).all() 
+    reserved_items = Request.query.filter_by(email=user.email).all()
+    
+    if request.method == 'POST':
+        # Handle profile updates
+        if 'profile_picture' in request.files:
+            profile_picture = request.files['profile_picture']
+            user.profile_picture = save_profile_picture(profile_picture)
+        user.name = request.form['name']
+        user.email = request.form['email']
+        new_password = request.form['password']
+        confirm_password = request.form['confirm_password']
+        if new_password and new_password == confirm_password:
+            user.set_password(new_password)
+        db.session.commit()
+        flash('Profile updated successfully!', 'success')
+        return redirect(url_for('profile'))
+    
     return render_template('profile.html', user=user, donated_items=donated_items, reserved_items=reserved_items)
 
 
@@ -362,10 +409,9 @@ def profile():
 @app.route('/admin')
 def admin_dashboard():
     pending_donations = Donation.query.filter_by(status='pending').all()
-    requested_donations = Request.query.filter_by(status='pending').all()
+    pending_requests= Request.query.all()
     users = User.query.all()
-
-    return render_template('admin_dashboard.html', pending_donations=pending_donations, users=users)
+    return render_template('admin_dashboard.html', pending_donations=pending_donations, pending_requests=pending_requests, users=users)
 
 @app.route('/admin/edit_user/<int:user_id>', methods=['GET', 'POST'])
 def admin_edit_user(user_id):
@@ -387,7 +433,6 @@ def admin_delete_user(user_id):
     flash('User deleted successfully!', 'success')
     return redirect(url_for('admin_dashboard'))
 
-# Admin Approve Donation Route
 @app.route('/admin/approve_donation/<int:donation_id>', methods=['POST'])
 def admin_approve_donation(donation_id):
     donation = Donation.query.get_or_404(donation_id)
@@ -397,11 +442,20 @@ def admin_approve_donation(donation_id):
     if inventory_item:
         inventory_item.qty += donation.quantity
     else:
-        inventory_item = Inventory(name=donation.item_name, qty=donation.quantity)
+        inventory_item = Inventory(name=donation.item_name, qty=donation.quantity, description=donation.description)
         db.session.add(inventory_item)
     db.session.commit()
     flash('Donation approved and inventory updated successfully!', 'success')
     return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/mark_request_as_picked_up/<int:request_id>', methods=['POST'])
+def mark_request_as_picked_up(request_id):
+    request = Request.query.get_or_404(request_id)
+    request.status = 'picked up'
+    db.session.commit()
+    flash('Request marked as picked up successfully!', 'success')
+    return redirect(url_for('admin_dashboard'))
+
 
 def readFile():
     with open("static\csvFile.csv", 'r') as file:

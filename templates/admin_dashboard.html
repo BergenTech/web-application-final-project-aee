@@ -28,6 +28,37 @@
     </tbody>
 </table>
 
+
+<h1>Pending Requests</h1>
+<div class="container">
+    <table>
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Requested Food</th>
+                <th>Quantity</th>
+                <th>Message</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in pending_requests %}
+            <tr>
+                <td>{{ request.email }}</td>
+                <td>{{ request.requested_food }}</td>
+                <td>{{ request.quantity }}</td>
+                <td>{{ request.message }}</td>
+                <td>
+                    <form method="post" action="{{ url_for('mark_request_as_picked_up', request_id=request.id) }}">
+                        <button type="submit">Picked Up</button>
+                    </form>                
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
 <h1>User Management</h1>
 <table>
     <thead>

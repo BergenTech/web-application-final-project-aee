@@ -17,11 +17,36 @@
   .container {
     padding: 2px 16px;
   } 
+  
 </style>
 
 {%block content%}
 
 <div class="container-fluid overflow-hidden">
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <div class="form-floating mb-3 d-flex justify-content-center">
+          <form action="/inventory" method="POST">
+          <li>
+            <select class="form-select" aria-label="Default select example" name="search_by">
+              <option value="name">Name</option>
+              <option value="bank">Food Bank</option>
+           </select>
+           <label for="floatingInput"></label>
+          </li>
+       </div>
+       <li class="nav-item">
+        <input type="text" class="form-control" id="floatingInput" placeholder="Search" name='search_text' required>
+          <label for="floatingInput"></label>
+       </li>
+       <li class="nav-item">
+        <button type="submit" class="btn btn-secondary btn-lg" name="search">SEARCH</button>
+       </li>
+      </ul>
+      </form>
+    </div>
+  </nav>
   <div class="row vh-100 overflow-auto">
       <div class="col-12 col-sm-3 col-xl-2 px-sm-2 px-0 bg-light d-flex sticky-top">
           <div class="d-flex flex-sm-column flex-row flex-grow-1 align-items-center align-items-sm-start px-3 pt-2 text-clack">
@@ -34,8 +59,9 @@
                     <div class="container">
                       {%for thing in cart%}
                       <div class="card row">
-                        <div class="col">{{thing}}</div>
-                        <div class="col">{{thing}}</div>
+                        <div class="col">{{thing[0]}}</div>
+                        <div class="col">{{thing[1]}}</div>
+                        <td><a href="#" onclick="return confirm('Are you sure to delete {{thing[0]}}?')"><img src="static\assets\img\addition\delete.png" alt="" width="15px"></a></td>
                       </div>
                       {%endfor%}
                     </div>
@@ -49,10 +75,29 @@
       </div>
       <div class="col d-flex flex-column h-100">
         <div class="row">
-          {%for thing in invent_list%}
+          <div class="row row-cols-1 row-cols-md-3 g-4">
+            {%for thing in invent_list%}
+            <div class="col">
+              <div class="card">
+                <form action="/inventory" method="POST">
+                <img src="https://mdbcdn.b-cdn.net/img/new/standard/city/041.webp" class="card-img-top"
+                  alt="Hollywood Sign on The Hill" />
+                <div class="card-body">
+                  <input type="hidden" name="item" value="{{ thing.name }}">
+                  <h5 class="card-title">{{thing.name}}</h5>
+                  <p class="card-text">
+                    This is a longer card with supporting text below as a natural lead-in to
+                    additional content. This content is a little bit longer.
+                  </p>
+                </div>
+              </form>
+              </div>
+            </div>
+            {%endfor%}
+          </div>
+         
 
           <div class="card col-4">
-            <!-- <img src="https://www.delmonte.com/sites/default/files/NSA%20Corn_1050x500_0.png" alt="Avatar" style="object-fit:contain;" width ="50%"> -->
             <div class="container bg-secondary p-3">
               <form action="/inventory" method="POST">
                 <input type="hidden" name="item" value="{{ thing.name }}">
@@ -61,12 +106,10 @@
                 <p>Request:</p>
                 <input type="number" id="qty" name="qty" min="0" max="100" step="1" value="0">
                 <br>
-                <!-- Button trigger modal -->
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal{{ loop.index }}">
                   More details
                 </button>
 
-                <!-- Modal -->
                 <div class="modal fade" id="exampleModal{{ loop.index }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                   <div class="modal-dialog modal-lg">
                     <div class="modal-content">
