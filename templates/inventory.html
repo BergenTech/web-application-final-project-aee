@@ -28,51 +28,56 @@
       <ul class="navbar-nav mr-auto">
         <div class="form-floating mb-3 d-flex justify-content-center">
           <form action="/inventory" method="POST">
-          <li>
-            <select class="form-select" aria-label="Default select example" name="search_by">
-              <option value="name">Name</option>
-              <option value="bank">Food Bank</option>
-           </select>
-           <label for="floatingInput"></label>
-          </li>
-       </div>
-       <li class="nav-item">
-        <input type="text" class="form-control" id="floatingInput" placeholder="Search" name='search_text' required>
+            <li>
+              <select class="form-select" aria-label="Default select example" name="search_by">
+                <option value="name">Name</option>
+                <option value="bank">Food Bank</option>
+              </select>
+              <label for="floatingInput"></label>
+            </li>
+        </div>
+        <li class="nav-item">
+          <input type="text" class="form-control" id="floatingInput" placeholder="Search" name='search_text' required>
           <label for="floatingInput"></label>
-       </li>
-       <li class="nav-item">
-        <button type="submit" class="btn btn-secondary btn-lg" name="search">SEARCH</button>
-       </li>
+        </li>
+        <li class="nav-item">
+          <button type="submit" class="btn btn-secondary btn-lg" name="search">SEARCH</button>
+        </li>
       </ul>
       </form>
     </div>
   </nav>
   <div class="row vh-100 overflow-auto">
-      <div class="col-12 col-sm-3 col-xl-2 px-sm-2 px-0 bg-light d-flex sticky-top">
-          <div class="d-flex flex-sm-column flex-row flex-grow-1 align-items-center align-items-sm-start px-3 pt-2 text-clack">
-              <a href="/" class="d-flex align-items-center pb-sm-3 mb-md-0 me-md-auto text-black text-decoration-none">
-                  <span class="fs-5">Your Cart</span>
-              </a>
-              <ul class="nav nav-pills flex-sm-column flex-row flex-nowrap flex-shrink-1 flex-sm-grow-0 flex-grow-1 mb-sm-auto mb-0 justify-content-center align-items-center align-items-sm-start" id="menu">
-                <form action="/inventory" method="POST">
-                  <li class="nav-item">
-                    <div class="container">
-                      {%for thing in cart%}
-                      <div class="card row">
-                        <div class="col">{{thing[0]}}</div>
-                        <div class="col">{{thing[1]}}</div>
-                        <td><a href="#" onclick="return confirm('Are you sure to delete {{thing[0]}}?')"><img src="static\assets\img\addition\delete.png" alt="" width="15px"></a></td>
-                      </div>
-                      {%endfor%}
-                    </div>
-                  </li>
-                  <li>
-                    <button type="submit" class="btn btn-success" name="checkout">Check Out</button>
-                  </li>
-                </form>
-              </ul>
-          </div>
+    <div class="col-12 col-sm-3 col-xl-2 px-sm-2 px-0 bg-light d-flex sticky-top">
+      <div class="d-flex flex-sm-column flex-row flex-grow-1 align-items-center align-items-sm-start px-3 pt-2 text-clack">
+        <a href="/" class="d-flex align-items-center pb-sm-3 mb-md-0 me-md-auto text-black text-decoration-none">
+          <span class="fs-5">Your Cart</span>
+        </a>
+        <ul class="nav nav-pills flex-sm-column flex-row flex-nowrap flex-shrink-1 flex-sm-grow-0 flex-grow-1 mb-sm-auto mb-0 justify-content-center align-items-center align-items-sm-start" id="menu">
+          <form action="/inventory" method="POST">
+            {% for item in cart %}
+            <li class="nav-item">
+              <div class="container">
+                <div class="card row">
+                  <div class="col">{{ item[0] }}</div>
+                  <div class="col">{{ item[1] }}</div>
+                  <input type="hidden" name="item_index" value="{{ loop.index }}">
+                  <button type="submit" class="btn btn-light" name="delete_cart_item">
+                    <img src="https://cdn-icons-png.freepik.com/512/6861/6861362.png" alt="" width="15px">
+                  </button>
+                </div>
+              </div>
+            </li>
+            {% endfor %}
+          </form>
+          <form action="/inventory" method="POST">
+            <li>
+              <button type="submit" class="btn btn-success" name="checkout">Check Out</button>
+            </li>
+          </form>
+        </ul>
       </div>
+    </div>
       <div class="col d-flex flex-column h-100">
         <div class="row">
           <div class="row row-cols-1 row-cols-md-3 g-4">
@@ -80,29 +85,13 @@
             <div class="col">
               <div class="card">
                 <form action="/inventory" method="POST">
-                <img src="https://mdbcdn.b-cdn.net/img/new/standard/city/041.webp" class="card-img-top"
-                  alt="Hollywood Sign on The Hill" />
+                <!-- <img src="https://mdbcdn.b-cdn.net/img/new/standard/city/041.webp" class="card-img-top"
+                  alt="Hollywood Sign on The Hill" /> -->
                 <div class="card-body">
                   <input type="hidden" name="item" value="{{ thing.name }}">
                   <h5 class="card-title">{{thing.name}}</h5>
                   <p class="card-text">
-                    This is a longer card with supporting text below as a natural lead-in to
-                    additional content. This content is a little bit longer.
-                  </p>
-                </div>
-              </form>
-              </div>
-            </div>
-            {%endfor%}
-          </div>
-         
-
-          <div class="card col-4">
-            <div class="container bg-secondary p-3">
-              <form action="/inventory" method="POST">
-                <input type="hidden" name="item" value="{{ thing.name }}">
-                <h4>{{ thing.name }}</h4>
-                <label for="qty">Quantity: {{thing.qty}}</label>
+                    <label for="qty">Quantity: {{thing.qty}}</label>
                 <p>Request:</p>
                 <input type="number" id="qty" name="qty" min="0" max="100" step="1" value="0">
                 <br>
@@ -127,11 +116,13 @@
                   </div>
                 </div>
                 <button type="submit" class="btn btn-success" name="food_picked">Submit</button>
-            </form>
-      
+                  </p>
+                </div>
+              </form>
+              </div>
             </div>
-          </div>
-          {%endfor%}
+            {%endfor%}
+          </div>         
       </div>
   </div>
 </div>

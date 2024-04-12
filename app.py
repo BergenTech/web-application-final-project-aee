@@ -148,35 +148,35 @@ def inventory():
             object = Inventory.query.filter_by(name=item).first()
             qty = int(request.form.get("qty"))
             if qty > object.qty:
-                flash(f"Please request a less than or equal amount of {item}'s quanity of {object.qty}")
+                flash(f"Please request a less than or equal amount of {item}'s quantity of {object.qty}", "danger")
                 session['cart'] = cart
                 return render_template("inventory.html", invent_list=all_inventory, cart=cart)
             cart.append([item, qty])
             flash(f"Added {qty} {item} to cart", "success")
         elif "checkout" in request.form:
             for item in cart:
-                id = current_user.id
                 try:
+                    # object.qty=int(object.qty -item[1])
                     new_request = Request(requested_food=item[0], quantity=item[1], email=current_user.email)
                     # Save the new donation to the database
                     db.session.add(new_request)
                     print('almost')
                     db.session.commit()
                     print('committed!!!')
-                    send_donation_notification_to_admin(new_request)
-                    print('aaaaaaaaaaa')
+                    # send_donation_notification_to_admin(new_request)
+                    
                 except Exception as e:
                     print('Error:', str(e))
                     db.session.rollback()
                     flash("There was an issue somewhere", "danger")
+                    return render_template("inventory.html", invent_list=all_inventory, cart=cart)
             flash(f"Requested your items from default bank", "success")
             session['cart'].clear()
-        elif "delete" in request.form:
-            name = request.form.get("item")
-            # book_to_delete = Book.query.get(id)
-            # db.session.delete(book_to_delete)
-            # db.session.commit()
-            pass
+        elif "delete_cart_item" in request.form:
+            item_index = int(request.form.get('item_index'))
+            print(item_index)
+            del session['cart'][item_index-1]
+            flash("Item removed successfully", "success")
         elif "search" in request.form:
             search_text = request.form["search_text"]
             search_by = request.form["search_by"]
