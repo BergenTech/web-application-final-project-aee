@@ -1,74 +1,87 @@
 {% extends "base.html" %}
 {% block title %}Register{% endblock %}
 {% block content %}
-<form method="post">
-  <!-- Upload Profile Picture -->
-  <div class="input-group mb-3">
-    <input type="file" class="form-control" name="image" accept=".jpg, .png" required>
+
+<!-- Section: Design Block -->
+<section class="text-center">
+  <!-- Background image -->
+  <div class="p-5 bg-image" style="
+        background-image: url('https://mdbootstrap.com/img/new/textures/full/171.jpg');
+        height: 300px;
+        "></div>
+  <!-- Background image -->
+
+  <div class="card mx-4 mx-md-5 shadow-5-strong" style="
+        margin-top: -100px;
+        background: hsla(0, 0%, 100%, 0.8);
+        backdrop-filter: blur(30px);
+        ">
+    <div class="card-body py-5 px-md-5">
+
+      <div class="row d-flex justify-content-center">
+        <div class="col-lg-8">
+          <h2 class="fw-bold mb-5">Sign up now</h2>
+          <form method="POST" action="/register">
+            <!-- 2 column grid layout with text inputs for the first and last names -->
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <div data-mdb-input-init class="form-outline">
+                  <input type="text" id="form3Example1" class="form-control" />
+                  <label class="form-label" for="form3Example1" name="name" required >First name</label>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div data-mdb-input-init class="form-outline">
+                  <input type="text" id="form3Example2" class="form-control" name="last_name" required>
+                  <label class="form-label" for="form3Example2">Last name</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Email input -->
+            <div data-mdb-input-init class="form-outline mb-4">
+              <input type="email" id="form3Example3" class="form-control" name="email" required/>
+              <label class="form-label" for="form3Example3">Email address</label>
+            </div>
+
+            <!-- Password input -->
+            <div data-mdb-input-init class="form-outline mb-4">
+              <input type="password" id="form3Example4" class="form-control" name="password" required/>
+              <label class="form-label" for="form3Example4">Password</label>
+            </div>
+            <div data-mdb-input-init class="form-outline mb-4">
+              <input type="password" id="form3Example4" class="form-control" />
+              <label class="form-label" for="form3Example4" name="confirm_password" required>Confirm Password</label>
+            </div>
+            <div data-mdb-input-init class="form-outline mb-4">
+              <input type="file" class="form-control" name="image" accept=".jpg, .png" required>
+            </div>
+
+            <!-- Checkbox -->
+            <div class="form-check d-flex justify-content-center mb-4">
+              <input class="form-check-input me-2" type="checkbox" value="" id="form2Example33" checked name="accept_terms"/>
+              <label class="form-check-label" for="form2Example33">
+                Enable MFA
+              </label>
+            </div>
+            <div class="form-check d-flex justify-content-center mb-4">
+              <input class="form-check-input me-2" type="checkbox" value="accepted" id="form2Example33" checked name="accept_terms" required/>
+              <label class="form-check-label" for="form2Example33">
+                I agree to the <a href="#">Terms of Service</a>
+              </label>
+            </div>
+
+            <!-- Submit button -->
+            <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">
+              Sign up
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
+</section>
+<!-- Section: Design Block -->
 
-  <!-- First Name -->
-  <div class="input-group mb-3">
-    <span class="input-group-text"><i class="fas fa-user"></i></span>
-    <input type="text" class="form-control" placeholder="First Name" name="name" required>
-  </div>
 
-  <!-- Last Name -->
-  <div class="input-group mb-3">
-    <span class="input-group-text"><i class="fas fa-user"></i></span>
-    <input type="text" class="form-control" placeholder="Last Name" name="last_name" required>
-  </div>
-
-  <!-- Email -->
-  <div class="input-group mb-3">
-    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-    <input type="email" class="form-control" placeholder="Your Email" name="email" required>
-  </div>
-
-  <!-- Password -->
-  <div class="input-group mb-3">
-    <span class="input-group-text"><i class="fas fa-lock"></i></span>
-    <input type="password" class="form-control" placeholder="Password" name="password" required>
-  </div>
-
-  <!-- Confirm Password -->
-  <div class="input-group mb-3">
-    <span class="input-group-text"><i class="fas fa-lock"></i></span>
-    <input type="password" class="form-control" placeholder="Confirm password" name="confirm_password" required>
-  </div>
-
-  <!-- Multi-Factor Authentication -->
-  <div class="form-check form-switch mb-3">
-    <input class="form-check-input" type="checkbox" id="mfa_toggle" name="mfa" value="enabled">
-    <label class="form-check-label" for="mfa_toggle">Multi-Factor Authentication</label>
-  </div>
-
-  <!-- Phone Number -->
-  <div id="phoneNumber" style="display: none;" class="mb-3">
-    <input type="tel" class="form-control" placeholder="Phone Number" name="phoneNumber">
-  </div>
-
-  <!-- Terms of Service -->
-  <div class="form-check mb-3">
-    <input class="form-check-input" type="checkbox" value="accepted" name="accept_terms" id="flexCheckDefault" required>
-    <label class="form-check-label" for="flexCheckDefault">
-      I agree to the <a href="#">Terms of Service</a>
-    </label>
-  </div>
-
-  <!-- Submit Button -->
-  <div class="d-grid gap-2">
-    <button type="submit" class="btn btn-primary">Register</button>
-  </div>
-</form>
-
-<script>
-  // Toggle phone number field based on MFA checkbox
-  const mfaToggle = document.getElementById('mfa_toggle');
-  const phoneNumber = document.getElementById('phoneNumber');
-
-  mfaToggle.addEventListener('change', function() {
-    phoneNumber.style.display = this.checked ? 'block' : 'none';
-  });
-</script>
 {% endblock %}

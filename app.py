@@ -343,12 +343,11 @@ def donate():
             flash("Donation successful! Thank you for your contribution.", "success")
             user = current_user
             donated_items = Donation.query.filter_by(id=user.id).all() 
-            requested_items = Request.query.filter_by(email=user.email).all()
             
-            return redirect("/profile", user=user, donated_items=donated_items, requested_items=requested_items) 
+            return render_template('profile.html', user=user, donated_items=donated_items, requested_items=requested_items) 
         except Exception as e:
             # Handle database errors or other exceptions
-            flash("An error occurred while processing your donation. Please try again later.", "danger")
+            # flash("An error occurred while processing your donation. Please try again later.", "danger")
             app.logger.error(f"Error processing donation: {e}")
             return redirect(url_for('donate'))
     return render_template('donate.html')
@@ -385,7 +384,7 @@ def profile():
         return redirect(url_for('login'))
     
     donated_items = Donation.query.filter_by(id=user.id).all() 
-    reserved_items = Request.query.filter_by(email=user.email).all()
+    requested_items = Request.query.filter_by(email=user.email).all()
     
     if request.method == 'POST':
         # Handle profile updates
@@ -402,7 +401,7 @@ def profile():
         flash('Profile updated successfully!', 'success')
         return redirect(url_for('profile'))
     
-    return render_template('profile.html', user=user, donated_items=donated_items, reserved_items=reserved_items)
+    return render_template('profile.html', user=user, donated_items=donated_items, requested_items=requested_items)
 
 
 # Admin Dashboard Route
@@ -491,4 +490,4 @@ def upload():
 
 if __name__ == "__main__":
     app.secret_key = "super_secret_key" 
-    app.run(debug=True, port="8000")
+    app.run(debug=True, port="1000")
