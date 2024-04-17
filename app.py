@@ -75,6 +75,7 @@ class Inventory(db.Model):
 #Donation model
 class Donation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), nullable=False)
     item_name = db.Column(db.String(100), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(255))  
@@ -87,9 +88,13 @@ class Donation(db.Model):
 class Request(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), nullable=False)
-    requested_food = db.Column(db.String(100), nullable=False)
+    item_name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(255))  
     quantity = db.Column(db.Integer, nullable=False)
-    
+    status = db.Column(db.String(20), default='pending')
+
+    def __repr__(self):
+        return f"Request(id={self.id}, item_name='{self.item_name}', quantity={self.quantity}), description={self.description}"
 
 # Create the database tables
 with app.app_context():
@@ -115,7 +120,7 @@ def verify_email(token):
 # Send a Verification Email:
 def send_verification_email(user):
     verification_link = (
-        f"http://127.0.0.1:8000/verify_email/{user.email_verification_token}"
+        f"https://63hsl2h0-1000.use.devtunnels.ms/verify_email/{user.email_verification_token}"
     )
     msg = Message("Verify Your Email", recipients=[user.email])
     msg.body = f"Click the following link to verify your email: {verification_link}"
@@ -157,7 +162,7 @@ def inventory():
             for item in cart:
                 try:
                     # object.qty=int(object.qty -item[1])
-                    new_request = Request(requested_food=item[0], quantity=item[1], email=current_user.email)
+                    new_request = Request(item_name=item[0], quantity=item[1], email=current_user.email)
                     # Save the new donation to the database
                     db.session.add(new_request)
                     print('almost')
@@ -321,6 +326,7 @@ def send_donation_notification_to_admin(donation):
 def donate():
     if request.method == 'POST':
         item_name = request.form.get('item_name')
+        email= None
         quantity = request.form.get('quantity')
         description = request.form.get('description')
 
@@ -344,7 +350,7 @@ def donate():
             user = current_user
             donated_items = Donation.query.filter_by(id=user.id).all() 
             
-            return render_template('profile.html', user=user, donated_items=donated_items, requested_items=requested_items) 
+            return render_template('profile.html', user=user, donated_items=donated_items) 
         except Exception as e:
             # Handle database errors or other exceptions
             # flash("An error occurred while processing your donation. Please try again later.", "danger")
@@ -408,7 +414,7 @@ def profile():
 @app.route('/admin')
 def admin_dashboard():
     pending_donations = Donation.query.filter_by(status='pending').all()
-    pending_requests= Request.query.all()
+    pending_requests= Request.query.filter_by(status='pending').all()
     users = User.query.all()
     return render_template('admin_dashboard.html', pending_donations=pending_donations, pending_requests=pending_requests, users=users)
 

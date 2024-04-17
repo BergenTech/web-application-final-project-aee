@@ -26,8 +26,8 @@
             <div class="row">
               <div class="col-md-6 mb-4">
                 <div data-mdb-input-init class="form-outline">
-                  <input type="text" id="form3Example1" class="form-control" />
-                  <label class="form-label" for="form3Example1" name="name" required >First name</label>
+                  <input type="text" id="form3Example1" class="form-control" name="name"/>
+                  <label class="form-label" for="form3Example1"  required >First name</label>
                 </div>
               </div>
               <div class="col-md-6 mb-4">
@@ -44,28 +44,35 @@
               <label class="form-label" for="form3Example3">Email address</label>
             </div>
 
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <div data-mdb-input-init class="form-outline">
+                  <input type="password" id="form3Example4" class="form-control" name="password" required/>
+                  <label class="form-label" for="form3Example4">Password</label>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div data-mdb-input-init class="form-outline mb-4">
+                  <input type="password" id="form3Example4" class="form-control" name="confirm_password" />
+                  <label class="form-label" for="form3Example4"  required>Confirm Password</label>
+                </div>
+              </div>
+            </div>
+
             <!-- Password input -->
-            <div data-mdb-input-init class="form-outline mb-4">
-              <input type="password" id="form3Example4" class="form-control" name="password" required/>
-              <label class="form-label" for="form3Example4">Password</label>
-            </div>
-            <div data-mdb-input-init class="form-outline mb-4">
-              <input type="password" id="form3Example4" class="form-control" />
-              <label class="form-label" for="form3Example4" name="confirm_password" required>Confirm Password</label>
-            </div>
             <div data-mdb-input-init class="form-outline mb-4">
               <input type="file" class="form-control" name="image" accept=".jpg, .png" required>
             </div>
 
             <!-- Checkbox -->
             <div class="form-check d-flex justify-content-center mb-4">
-              <input class="form-check-input me-2" type="checkbox" value="" id="form2Example33" checked name="accept_terms"/>
+              <input class="form-check-input me-2" type="checkbox" value="" id="form2Example33" name="accept_terms"/>
               <label class="form-check-label" for="form2Example33">
                 Enable MFA
               </label>
             </div>
             <div class="form-check d-flex justify-content-center mb-4">
-              <input class="form-check-input me-2" type="checkbox" value="accepted" id="form2Example33" checked name="accept_terms" required/>
+              <input class="form-check-input me-2" type="checkbox" value="accepted" id="form2Example33" name="accept_terms" required/>
               <label class="form-check-label" for="form2Example33">
                 I agree to the <a href="#">Terms of Service</a>
               </label>
