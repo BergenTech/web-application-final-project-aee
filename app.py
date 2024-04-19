@@ -68,6 +68,7 @@ class Inventory(db.Model):
     qty = db.Column(db.Integer)
     description = db.Column(db.String(255)) 
     bank = db.Column(db.String)
+    tags = db.Column(db.String(255)) 
 
     def __repr__(self):
         db.create.all()
@@ -75,11 +76,12 @@ class Inventory(db.Model):
 #Donation model
 class Donation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100))
     item_name = db.Column(db.String(100), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(255))  
     status = db.Column(db.String(20), default='pending')
+    tags = db.Column(db.String(255))  
 
 
     def __repr__(self):
@@ -184,9 +186,8 @@ def inventory():
             flash("Item removed successfully", "success")
         elif "search" in request.form:
             search_text = request.form["search_text"]
-            search_by = request.form["search_by"]
             all_inventory = Inventory.query.filter(
-                getattr(Inventory, search_by).ilike(f"%{search_text}%")
+                getattr(Inventory, "name").ilike(f"%{search_text}%")
             ).all()
             return render_template("inventory.html", invent_list=all_inventory, cart=cart)
 
@@ -323,10 +324,13 @@ def send_donation_notification_to_admin(donation):
     mail.send(msg)
 
 @app.route('/donate', methods=['GET','POST'])
+@login_required
 def donate():
+    user=current_user
+    id=user.id
     if request.method == 'POST':
+        
         item_name = request.form.get('item_name')
-        email= None
         quantity = request.form.get('quantity')
         description = request.form.get('description')
 
@@ -337,7 +341,7 @@ def donate():
 
         try:
             # Create a new donation instance
-            new_donation = Donation(item_name=item_name, quantity=quantity, description=description)
+            new_donation = Donation(item_name=item_name, quantity=quantity, description=description, id=id)
 
             # Save the new donation to the database
             db.session.add(new_donation)

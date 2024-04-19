@@ -22,31 +22,74 @@
 
 {%block content%}
 
-<div class="container-fluid overflow-hidden">
-  <nav class="navbar navbar-expand-lg navbar-light">
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
-        <div class="form-floating mb-3 d-flex justify-content-center">
-          <form action="/inventory" method="POST">
+<div class="">
+  <!-- top bar -->
+  <nav class="navbar navbar-light bg-body-tertiary">
+    <div class="container-fluid justify-content-end">
+      <form class="d-flex input-group w-auto" action="/inventory" method="POST">
+        <ul class="navbar-nav mr-auto">
+          <div class="form-floating mb-3 d-flex justify-content-end">
             <li>
-              <select class="form-select" aria-label="Default select example" name="search_by">
-                <option value="name">Name</option>
-                <option value="bank">Food Bank</option>
-              </select>
-              <label for="floatingInput"></label>
+              <input
+                type="search"
+                name="search_text"
+                class="form-control rounded"
+                placeholder="Search by Name"
+                aria-label="Search"
+                aria-describedby="search-addon"
+                />
+              </li>
+            <li>
+              <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                  Search by Bank
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <li>
+                    <label class="dropdown-item">
+                      <input type="checkbox" class="form-check-input" value="default"> Default
+                    </label>
+                  </li>
+                  <li>
+                    <label class="dropdown-item">
+                      <input type="checkbox" class="form-check-input" value="second"> Second
+                    </label>
+                  </li>
+                </ul>
+              </div>
             </li>
-        </div>
+              <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                  Search by Tags
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <li>
+                    <label class="dropdown-item">
+                      <input type="checkbox" class="form-check-input" value="option1"> Option 1
+                    </label>
+                  </li>
+                  <li>
+                    <label class="dropdown-item">
+                      <input type="checkbox" class="form-check-input" value="option2"> Option 2
+                    </label>
+                  </li>
+                  <li>
+                    <label class="dropdown-item">
+                      <input type="checkbox" class="form-check-input" value="option3"> Option 3
+                    </label>
+                  </li>
+                </ul>
+              </div>
+            </li>
         <li class="nav-item">
-          <input type="text" class="form-control" id="floatingInput" placeholder="Search" name='search_text' required>
-          <label for="floatingInput"></label>
+          <button type="submit" class="btn" style = "background-color: rgb(222, 97, 107)" name="search">SEARCH</button>
         </li>
-        <li class="nav-item">
-          <button type="submit" class="btn btn-lg" style = "background-color: rgb(222, 97, 107)" name="search">SEARCH</button>
-        </li>
+    </div>
       </ul>
       </form>
     </div>
   </nav>
+  <!-- side bar -->
   <div class="row vh-100 overflow-auto">
     <div class="col-12 col-sm-3 col-xl-2 px-sm-2 px-0 bg-light d-flex sticky-top">
       <div class="d-flex flex-sm-column flex-row flex-grow-1 align-items-center align-items-sm-start px-3 pt-2 text-clack">
@@ -90,6 +133,7 @@
                 <div class="card-body">
                   <input type="hidden" name="item" value="{{ thing.name }}">
                   <h5 class="card-title">{{thing.name}}</h5>
+                  <h6>At the {{thing.bank}} bank</h6>
                   <p class="card-text">
                     <label for="qty">Quantity: {{thing.qty}}</label>
                 <p>Request:</p>

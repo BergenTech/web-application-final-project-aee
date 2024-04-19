@@ -3,104 +3,82 @@
 
 
 {%block content%}
-<section class="hero">
+
+  <!-- ======= Hero Section ======= -->
+  <section id="hero" class="hero d-flex align-items-center section-bg">
     <div class="container">
-        <h1>Welcome to Our Food Pantry</h1>
-        <p class="tagline">Helping Those in Need, One Meal at a Time</p>
-        <a href="/register" class="btn" style="background-color:#EAAB26">Get Involved</a>
+      <div class="row justify-content-between gy-5">
+        <div class="col-lg-5 order-2 order-lg-1 d-flex flex-column justify-content-center align-items-center align-items-lg-start text-center text-lg-start">
+          <h2 data-aos="fade-up">Welcome to Our<br>Food Pantry</h2>
+          <p data-aos="fade-up" data-aos-delay="100">Helping Those in Need, One Meal at a Time.</p>
+          <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
+            <a href="/register" class="btn-book-a-table">Create an Account</a>
+          </div>
+        </div>
+        <div class="col-lg-5 order-1 order-lg-2 text-center text-lg-start">
+          <img src="static/assets/img/hero-img.png" class="img-fluid" alt="" data-aos="zoom-out" data-aos-delay="300">
+        </div>
+      </div>
     </div>
-</section>
+  </section><!-- End Hero Section -->
 
-<!-- Image <img src="" alt=""> -->
+  <main id="main">
 
-<!-- Text
-ON IMAGE
-Welcome to Foodle, a website with the goal of making a difference in the lives of those facing food insecurity. 
-Our organization was founded with a simple yet powerful mission: to provide nourishment,
-support, and hope to individuals and families in need within our community. At Foodle, we believe that
-access to nutritious food is a fundamental human right. We understand the challenges that many individuals
-and families face in meeting their basic nutritional needs, and we are committed to addressing this issue
-with compassion and empathy. Foodle relies on the support of generous donors, volunteers, and community partners to fulfill our mission.
- Join us in the fight against hunger and help us
-            build a brighter, healthier future for all.
--->
+    <!-- ======= About Section ======= -->
+    <section id="about" class="about">
+      <div class="container" data-aos="fade-up">
 
-<!-- About Section -->
-<section class="about">
-    <div class="container">
-        <h2>About Us</h2>
-        <p>Welcome to Foodle, where we are dedicated to making a difference in the lives of those facing food
+        <div class="section-header">
+          <p><span>About Us</span></p>
+        </div>
+
+        <div class="row gy-4">          
+          <div class="col-lg-5 d-flex align-items-end" data-aos="fade-up" data-aos-delay="300">
+            <div class="content ps-0 ps-lg-5">
+              <p class="fst-italic">
+                Welcome to Foodle, where we are dedicated to making a difference in the lives of those facing food
             insecurity. Our organization was founded with a simple yet powerful mission: to provide nourishment,
             support, and hope to individuals and families in need within our community. At Foodle, we believe that
             access to nutritious food is a fundamental human right. We understand the challenges that many individuals
             and families face in meeting their basic nutritional needs, and we are committed to addressing this issue
-            with compassion and empathy.</p>
-    </div>
-</section>
-<!-- About Section -->
-<section class="about">
-    <div class="container">
-        <h2>How You Can Help</h2>
-        <p>Foodle relies on the support of generous donors, volunteers, and community partners to fulfill our mission.
+            with compassion and empathy.
+              </p>
+              <div class="section-header">
+              <p>How You Can Help</p>
+              </div>
+              <p>
+                Foodle relies on the support of generous donors, volunteers, and community partners to fulfill our mission.
             Whether you're interested in making a donation, volunteering your time, or spreading the word about our
             cause, there are many ways to get involved and make a difference. Together, we can create a community where
             everyone has access to the nourishment they need to thrive. Join us in the fight against hunger and help us
-            build a brighter, healthier future for all.</p>
-    </div>
-</section>
+            build a brighter, healthier future for all.
+              </p>
 
-<section class="helping">
-    <h3>Helping Out!</h3>
-
-    <div class="card-group">
-
-        <div class="card text-center mb-3" style="width: 18rem; background-color:rgb(222, 97, 107)">
-            <h3 class="card-title" style="background-color:#af474f">How We Help</h3>
-            <div class="card-body">
-                <p class="card-text">We help by creating an organized, user-friendly website which gets you in contact.
-                </p>
+              <div class="position-relative mt-4">
+                <img src="static/assets/img/about-2.jpg" class="img-fluid" alt="">
+              </div>
             </div>
+          </div>
         </div>
 
+      </div>
+    </section><!-- End About Section -->
 
 
-        <!-- Food Dono Card -->
-        <div class="card text-center mb-3" style="width: 18rem; background-color:#F59265">
-            <h3 class="card-title" style="background-color:#D06D41">Food Donation</h3>
-            <div class="card-body">
-                <p class="card-text">Help donate food to people in need.</p>
-            </div>
-        </div>
+  <a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
+  <div id="preloader"></div>
 
+  <!-- Vendor JS Files -->
+  <script src="static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="static/assets/vendor/aos/aos.js"></script>
+  <script src="static/assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="static/assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="static/assets/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="static/assets/vendor/php-email-form/validate.js"></script>
 
-        <!-- Volunteer Card -->
-        <div class="card text-center mb-3" style="width: 18rem; background-color:#EAAB26">
-            <h3 class="card-title" style="background-color:#D8970D">Volunteer</h3>
-            <div class="card-body">
-                <p class="card-text">Join the team as a volunteer and make a difference in your community.</p>
-            </div>
-        </div>
+  <!-- Template Main JS File -->
+  <script src="static/assets/js/main.js"></script>
 
-
-
-        <!-- Spread Awareness Card -->
-        <div class="card text-center mb-3" style="width: 18rem; background-color:#B5AB53">
-            <h3 class="card-title" style="background-color:#9B923E">Spread Awareness</h3>
-            <div class="card-body">
-                <p class="card-text">Help spread awareness about food insicurity.</p>
-            </div>
-        </div>
-
-
-    </div>
-</section>
-
-<section class="featured-locations">
-    <div class="container">
-        <h2>Featured Locations</h2>
-
-    </div>
-</section>
 
 {%endblock%}

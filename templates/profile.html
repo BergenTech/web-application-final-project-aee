@@ -20,7 +20,7 @@
 {% if requested_items %}
     <ul>
         {% for item in requested_items %}
-            <li>{{ item.requested_food }} - Quantity: {{ item.quantity }} - Status: {{ item.status }}</li>
+            <li>{{ item.item_name }} - Quantity: {{ item.quantity }} - Status: {{ item.status }}</li>
         {% endfor %}
     </ul>
 {% else %}
