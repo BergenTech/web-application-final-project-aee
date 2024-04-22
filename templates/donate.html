@@ -1,6 +1,7 @@
 {%extends "base.html"%}
 {%block title%}Donate{%endblock%}
 {%block content%}
+    <section id="hero" class="hero d-flex align-items-center section-bg">
 <img src="/static/images/givingfoodai.jpg" alt="HE">
 <h1>Donate Items</h1>
     <form method="post">
@@ -24,4 +25,5 @@
 {% if error_message %}
 <p class="error-message">{{ error_message }}</p>
 {% endif %}
+</section>
 {%endblock%}

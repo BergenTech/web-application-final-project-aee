@@ -21,6 +21,7 @@
 </style>
 
 {%block content%}
+<section id="hero" class="hero d-flex align-items-center section-bg">
 
 <div class="">
   <!-- top bar -->
@@ -40,23 +41,12 @@
                 />
               </li>
             <li>
-              <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                  Search by Bank
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <li>
-                    <label class="dropdown-item">
-                      <input type="checkbox" class="form-check-input" value="default"> Default
-                    </label>
-                  </li>
-                  <li>
-                    <label class="dropdown-item">
-                      <input type="checkbox" class="form-check-input" value="second"> Second
-                    </label>
-                  </li>
-                </ul>
-              </div>
+              <select class="form-select" aria-label="Default select example" name="bank">
+                <option value="">Choose Bank</option>
+                <option value="defualt">Default</option>
+                <option value="second">Second</option>
+             </select>
+             <label for="floatingInput"></label>
             </li>
               <div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -170,5 +160,6 @@
       </div>
   </div>
 </div>
-
+</div>
+</section>
 {%endblock%}

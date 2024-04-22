@@ -186,9 +186,19 @@ def inventory():
             flash("Item removed successfully", "success")
         elif "search" in request.form:
             search_text = request.form["search_text"]
-            all_inventory = Inventory.query.filter(
+            bank = request.form["bank"]
+            print(bank)
+            if bank and search_text:
+                print('ahh')
+                all_inventory=Inventory.query.filter(getattr(Inventory, "name").ilike(f"%{search_text}%")).filter_by(bank = bank).all()
+            elif search_text:
+                all_inventory = Inventory.query.filter(
                 getattr(Inventory, "name").ilike(f"%{search_text}%")
-            ).all()
+                ).all()
+            elif bank:
+                all_inventory = Inventory.query.filter(
+                getattr(Inventory, "bank").ilike(f"%{bank}%")
+                ).all()
             return render_template("inventory.html", invent_list=all_inventory, cart=cart)
 
             
