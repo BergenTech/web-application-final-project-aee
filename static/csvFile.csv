@@ -1,10 +1,10 @@
-canned corn,just some corn in a can,21,defualt
-boxed pasta,just pasta in a box,2,defualt
-canned tuna,something smells a bit fishy,1,defualt
-applesauce,blended apples..?,34,defualt
-instant mashed potatoes,better than homemade?,64,defualt
-cereal,you better put this in the bowl before the milk,3,defualt
-canola oil,what even is a canola,12,defualt
-canned beans,what type? who knows,5,defualt
-powdered milk,how do they even do this??,8,defualt
-orange juice,better without pulp tbh,0,second
+canned corn,just some corn in a can,21,defualt, Vegan|Vegetarian|Gluten-free|Dairy-free|Nut-free|Sugar-free|Halal|Kosher
+boxed pasta,just pasta in a box,2,defualt, Vegan|Vegetarian|Dairy-free|Nut-free|Non-GMO|Sugar-free|Halal|Kosher
+canned tuna,something smells a bit fishy,1,defualt, Gluten-free|Dairy-free|Nut-free|Halal|Kosher
+applesauce,blended apples..?,34,defualt, Vegan|Vegetarian|Gluten-free|Dairy-free|Nut-free|Halal|Kosher
+instant mashed potatoes,better than homemade?,64,defualt, Vegan|Vegetarian|Nut-free|Sugar-free|Halal|Kosher
+cereal,you better put this in the bowl before the milk,3,defualt, Vegan|Vegetarian|Dairy-free|Nut-free|Halal|Kosher
+canola oil,what even is a canola,12,defualt, Vegan|Vegetarian|Gluten-free|Dairy-free|Nut-free|Non-GMO|Sugar-free|Halal|Kosher
+canned beans,what type? who knows,5,defualt, Vegan|Vegetarian|Gluten-free|Dairy-free|Nut-free|Non-GMO|Sugar-free|Halal|Kosher
+powdered milk,how do they even do this??,8,defualt, Vegetarian|Gluten-free|Nut-free|Non-GMO|Sugar-free|Halal|Kosher
+orange juice,better without pulp tbh,0,second, Vegan|Vegetarian|Gluten-free|Dairy-free|Nut-free|Halal|Kosher

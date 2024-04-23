@@ -1,9 +1,11 @@
 {%extends "base.html"%}
 {%block title%}Admin Dashboard{%endblock%}
 {%block content%}
+<br><br><br><br><br><br>
+
+<div class="container">
 <h1>Pending Donations</h1>
-<div class="containter">
-<table>
+<table class="table">
     <thead>
         <tr>
             <th>Item Name</th>
@@ -12,15 +14,15 @@
             <th>Action</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody class="table-body">
         {% for donation in pending_donations %}
-        <tr>
+        <tr class="table-row">
             <td>{{ donation.item_name }}</td>
             <td>{{ donation.quantity }}</td>
             <td>{{ donation.description }}</td>
             <td>
                 <form method="post" action="{{ url_for('admin_approve_donation', donation_id=donation.id) }}">
-                    <button type="submit">Approve</button>
+                    <button type="submit" class="btn btn-action">Approve</button>
                 </form>
             </td>
         </tr>
@@ -31,7 +33,7 @@
 
 <h1>Pending Requests</h1>
 <div class="container">
-    <table>
+    <table class="table">
         <thead>
             <tr>
                 <th>Email</th>
@@ -41,9 +43,9 @@
                 <th>Action</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody >
             {% for request in pending_requests %}
-            <tr>
+            <tr class="table-row">
                 <td>{{ request.email }}</td>
                 <td>{{ request.requested_food }}</td>
                 <td>{{ request.quantity }}</td>
@@ -60,16 +62,16 @@
 </div>
 
 <h1>User Management</h1>
-<table>
+<table class="table">
     <thead>
-        <tr>
+        <tr class="table-row">
             <th>Name</th>
             <th>Last Name</th>
             <th>Email</th>
             <th>Actions</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody class="table-body">
         {% for user in users %}
         <tr>
             <td>{{ user.name }}</td>

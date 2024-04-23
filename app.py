@@ -69,6 +69,7 @@ class Inventory(db.Model):
     description = db.Column(db.String(255)) 
     bank = db.Column(db.String)
     tags = db.Column(db.String(255)) 
+    total_tags = db.Column(db.String(255), default="Vegan|Vegetarian|Gluten-free|Dairy-free|Nut-free|Non-GMO|Sugar-free|Halal|Kosher")
 
     def __repr__(self):
         db.create.all()
@@ -148,6 +149,7 @@ def index():
 @login_required
 def inventory():
     all_inventory = Inventory.query.all()
+    print(type(all_inventory))
     cart = session.get('cart', [])
     if request.method == "POST":
         if "food_picked" in request.form:
@@ -364,7 +366,7 @@ def donate():
             user = current_user
             donated_items = Donation.query.filter_by(id=user.id).all() 
             
-            return render_template('profile.html', user=user, donated_items=donated_items) 
+            return (redirect("/profile") & render_template('profile.html', user=user, donated_items=donated_items))
         except Exception as e:
             # Handle database errors or other exceptions
             # flash("An error occurred while processing your donation. Please try again later.", "danger")
@@ -493,13 +495,13 @@ def addInvetnory(data):
                 description=row[1],
                 qty=row[2],
                 bank=row[3],
+                tags = row[4]
             )
             db.session.add(new_item)
             db.session.commit()
-            print("Added item")
-        except:
+        except Exception as e:
+            print('Error:', str(e))
             db.session.rollback()
-    print("yay it worked")
 
 @app.route('/csv', methods=["GET", "POST"])
 def upload():
