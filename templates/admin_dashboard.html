@@ -8,6 +8,7 @@
 <table class="table">
     <thead>
         <tr>
+            <th>Email</th>
             <th>Item Name</th>
             <th>Quantity</th>
             <th>Description</th>
@@ -17,12 +18,16 @@
     <tbody class="table-body">
         {% for donation in pending_donations %}
         <tr class="table-row">
+            <td>{{ donation.user.email }}</td>
             <td>{{ donation.item_name }}</td>
             <td>{{ donation.quantity }}</td>
             <td>{{ donation.description }}</td>
             <td>
                 <form method="post" action="{{ url_for('admin_approve_donation', donation_id=donation.id) }}">
-                    <button type="submit" class="btn btn-action">Approve</button>
+                    <button type="submit" class="btn btn-success">Approve</button>
+                </form>
+                <form method="post" action="{{ url_for('admin_delete_donation', donation_id=donation.id) }}" onsubmit="return confirm('Are you sure you want to delete this donation?');">
+                    <button type="submit" class="btn btn-danger">Delete</button>
                 </form>
             </td>
         </tr>
@@ -52,8 +57,11 @@
                 <td>{{ request.message }}</td>
                 <td>
                     <form method="post" action="{{ url_for('mark_request_as_picked_up', request_id=request.id) }}">
-                        <button type="submit">Picked Up</button>
-                    </form>                
+                        <button type="submit" class="btn btn-success">Picked Up</button>
+                    </form>     
+                    <form method="post" action="{{ url_for('admin_delete_request', request_id=request.id) }}" onsubmit="return confirm('Are you sure you want to delete this request?');">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>           
                 </td>
             </tr>
             {% endfor %}

@@ -5,7 +5,49 @@
 * Author: BootstrapMade.com
 * License: https://bootstrapmade.com/license/
 */
+/*--------------------------------------------------------------
+# Flash
+--------------------------------------------------------------*/
+.flashes {
+  list-style: none;
+  padding: 0;
+  margin-top: 100px;
+}
 
+.flash {
+  margin-bottom: 10px;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.danger {
+  background-color: #dea4a4;
+  color: rgba(206, 18, 18, 0.8);;
+}
+
+.success {
+  background-color: #a9c7fa;
+  color: #1266f1;
+}
+
+.warning {
+  background-color: #6573b8;
+  color: #232d5e;
+}
+
+.close {
+  float: right;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1;
+  color: #000;
+  text-shadow: 0 1px 0 #fff;
+  opacity: 0.2;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
 /*--------------------------------------------------------------
 # Set main reusable colors and fonts using CSS variables
 # Learn more about CSS variables at https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties
@@ -1651,3 +1693,4 @@ section {
 .footer .credits a {
   color: #fff;
 }
+

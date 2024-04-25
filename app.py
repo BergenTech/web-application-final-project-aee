@@ -15,6 +15,7 @@ from flask_login import LoginManager, UserMixin
 from flask_login import login_user, current_user, logout_user, login_required
 import random, string
 from twilio.rest import Client
+from sqlalchemy.orm import join
 
 
 app = Flask(__name__)
@@ -72,11 +73,12 @@ class Inventory(db.Model):
     total_tags = db.Column(db.String(255), default="Vegan|Vegetarian|Gluten-free|Dairy-free|Nut-free|Non-GMO|Sugar-free|Halal|Kosher")
 
     def __repr__(self):
-        db.create.all()
+        return f"Name(id={self.name}, qty='{self.qty}', description='{self.description}', bank "
 
 #Donation model
 class Donation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     email = db.Column(db.String(100))
     item_name = db.Column(db.String(100), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
@@ -84,6 +86,7 @@ class Donation(db.Model):
     status = db.Column(db.String(20), default='pending')
     tags = db.Column(db.String(255))  
 
+    user = db.relationship('User', backref=db.backref('donations', lazy=True))
 
     def __repr__(self):
         return f"Donation(id={self.id}, item_name='{self.item_name}', quantity={self.quantity}), description={self.description}"
@@ -145,11 +148,19 @@ def send_mfa(code):
 def index():
     return render_template("index.html")
 
+def filter_inventory(selected_tags):
+    filtered_inventory = []
+    inventory = Inventory.query.all()
+    for item in inventory:
+        tags_list = (item.tags).split('|')
+        if all(tag in tags_list for tag in selected_tags):
+            filtered_inventory.append(item)
+    return filtered_inventory
+
 @app.route('/inventory', methods=["POST","GET"])
 @login_required
 def inventory():
     all_inventory = Inventory.query.all()
-    print(type(all_inventory))
     cart = session.get('cart', [])
     if request.method == "POST":
         if "food_picked" in request.form:
@@ -160,6 +171,8 @@ def inventory():
                 flash(f"Please request a less than or equal amount of {item}'s quantity of {object.qty}", "danger")
                 session['cart'] = cart
                 return render_template("inventory.html", invent_list=all_inventory, cart=cart)
+            if item in cart[0]:
+                flash("You already have this", "danger")
             cart.append([item, qty])
             flash(f"Added {qty} {item} to cart", "success")
         elif "checkout" in request.form:
@@ -183,15 +196,16 @@ def inventory():
             session['cart'].clear()
         elif "delete_cart_item" in request.form:
             item_index = int(request.form.get('item_index'))
-            print(item_index)
             del session['cart'][item_index-1]
             flash("Item removed successfully", "success")
         elif "search" in request.form:
             search_text = request.form["search_text"]
             bank = request.form["bank"]
-            print(bank)
+            selected_tags = request.form.getlist('selected_tags')
+            print(selected_tags)
+            if selected_tags:
+                all_inventory = filter_inventory(selected_tags)
             if bank and search_text:
-                print('ahh')
                 all_inventory=Inventory.query.filter(getattr(Inventory, "name").ilike(f"%{search_text}%")).filter_by(bank = bank).all()
             elif search_text:
                 all_inventory = Inventory.query.filter(
@@ -202,9 +216,7 @@ def inventory():
                 getattr(Inventory, "bank").ilike(f"%{bank}%")
                 ).all()
             return render_template("inventory.html", invent_list=all_inventory, cart=cart)
-
-            
-            
+    
     session['cart'] = cart
     return render_template("inventory.html", invent_list=all_inventory, cart=cart)
 
@@ -338,10 +350,10 @@ def send_donation_notification_to_admin(donation):
 @app.route('/donate', methods=['GET','POST'])
 @login_required
 def donate():
+    
     user=current_user
-    id=user.id
     if request.method == 'POST':
-        
+        user=current_user
         item_name = request.form.get('item_name')
         quantity = request.form.get('quantity')
         description = request.form.get('description')
@@ -353,7 +365,7 @@ def donate():
 
         try:
             # Create a new donation instance
-            new_donation = Donation(item_name=item_name, quantity=quantity, description=description, id=id)
+            new_donation = Donation(user_id=user.id, item_name=item_name, quantity=quantity, description=description)
 
             # Save the new donation to the database
             db.session.add(new_donation)
@@ -429,8 +441,8 @@ def profile():
 # Admin Dashboard Route
 @app.route('/admin')
 def admin_dashboard():
-    pending_donations = Donation.query.filter_by(status='pending').all()
-    pending_requests= Request.query.filter_by(status='pending').all()
+    pending_donations = db.session.query(Donation, User.email).join(User, Donation.user_id == User.id).filter(Donation.status == 'pending').all()
+    pending_requests = Request.query.filter_by(status='pending').all()
     users = User.query.all()
     return render_template('admin_dashboard.html', pending_donations=pending_donations, pending_requests=pending_requests, users=users)
 
@@ -478,6 +490,37 @@ def mark_request_as_picked_up(request_id):
     return redirect(url_for('admin_dashboard'))
 
 
+@app.route('/admin/delete_donation/<int:donation_id>', methods=['POST'])
+def admin_delete_donation(donation_id):
+    # Find the donation by its ID
+    donation = Donation.query.get_or_404(donation_id)
+    donation.status = "Cancelled"
+    
+    # Commit the changes
+    db.session.commit()
+    
+    # Delete the donation
+    db.session.delete(donation)
+    db.session.commit()
+    
+    return redirect(url_for('admin_dashboard'))
+
+# For deleting a pending request
+@app.route('/admin/delete_request/<int:request_id>', methods=['POST'])
+def admin_delete_request(request_id):
+    # Find the request by its ID
+    request = Request.query.get_or_404(request_id)
+    request.status = "Cancelled"
+    
+    # Commit the changes
+    db.session.commit()
+    
+    # Delete the request
+    db.session.delete(request)
+    db.session.commit()
+    
+    return redirect(url_for('admin_dashboard'))
+
 def readFile():
     with open("static\csvFile.csv", 'r') as file:
     # Create a CSV reader object
@@ -495,7 +538,7 @@ def addInvetnory(data):
                 description=row[1],
                 qty=row[2],
                 bank=row[3],
-                tags = row[4]
+                tags = row[4],
             )
             db.session.add(new_item)
             db.session.commit()

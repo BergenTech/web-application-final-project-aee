@@ -86,16 +86,16 @@
     </header><!-- End Header -->
 
     {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
-      <strong>{{message}}</strong>
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    {% endfor %}
-    {% endif %}
+      {% if messages %}
+        <ul class="flashes">
+            {% for category, message in messages %}
+                <li class="flash {{ category }}">
+                    {{ message }}
+                    <button class="close" onclick="this.parentElement.style.display='none';">&times;</button>
+                </li>
+            {% endfor %}
+        </ul>
+      {% endif %}
     {% endwith %}
     <!-- <section id="hero" class="hero d-flex align-items-center section-bg"> -->
       <!-- <div class="container"> -->

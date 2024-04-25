@@ -53,10 +53,10 @@
                   Search by Tags
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  {%for tag in (invent_list[0].total_tags).split("|")%}
+                  {%for tag in ("Vegan|Vegetarian|Gluten-free|Dairy-free|Nut-free|Non-GMO|Sugar-free|Halal|Kosher").split("|")%}
                   <li>
                     <label class="dropdown-item">
-                      <input type="checkbox" class="form-check-input" value="{{tag}}"> {{tag}}
+                      <input type="checkbox" class="form-check-input" name="selected_tags" value="{{tag}}"> {{tag}}
                     </label>
                   </li>
                   {%endfor%}
