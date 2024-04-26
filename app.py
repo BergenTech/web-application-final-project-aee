@@ -171,8 +171,11 @@ def inventory():
                 flash(f"Please request a less than or equal amount of {item}'s quantity of {object.qty}", "danger")
                 session['cart'] = cart
                 return render_template("inventory.html", invent_list=all_inventory, cart=cart)
-            if item in cart[0]:
-                flash("You already have this", "danger")
+            if cart:
+                if (item in list for list in cart):
+                    flash("You already have this requested", "danger")
+                    return render_template("inventory.html", invent_list=all_inventory, cart=cart)
+
             cart.append([item, qty])
             flash(f"Added {qty} {item} to cart", "success")
         elif "checkout" in request.form:
