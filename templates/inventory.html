@@ -17,14 +17,16 @@
   .container {
     padding: 2px 16px;
   } 
+
+
   
 </style>
 
 {%block content%}
-<section id="hero" class="hero">
+<!-- <section id="hero" class="hero d-flex section-bg"> -->
 <!-- <section id="hero" class="hero d-flex align-items-center section-bg"> -->
 
-<div class="">
+<section class="seperate ">
   <!-- top bar -->
   <nav class="navbar navbar-light bg-body-tertiary">
     <div class="container-fluid justibfy-content-end">
@@ -44,7 +46,7 @@
             <li>
               <select class="form-select" aria-label="Default select example" name="bank">
                 <option value="">Choose Bank</option>
-                <option value="defualt">Default</option>
+                <option value="default">Default</option>
                 <option value="second">Second</option>
              </select>
              <label for="floatingInput"></label>
@@ -98,7 +100,7 @@
           </form>
           <form action="/inventory" method="POST">
             <li>
-              <button type="submit" class="btn" style = "background-color: #ce1212; color: white" name="checkout">Check Out</button>
+              <button type="submit" class="btn" style = "background-color: #1266f1; color: white" name="checkout">Check Out</button>
             </li>
           </form>
         </ul>
@@ -119,10 +121,12 @@
                   <h6>At the {{thing.bank}} bank</h6>
                   <p class="card-text">
                     <label for="qty">Quantity: {{thing.qty}}</label>
-                <p>Request:</p>
-                <input type="number" id="qty" name="qty" min="0" max="100" step="1" value="0">
+                <!-- <p>Request:</p>
+                <input type="number" id="qty" name="qty" min="0" max="100" step="1" value="0"> -->
+                <p style="display: inline-block; margin-right: 10px;">Request:</p>
+                <input type="number" id="qty" name="qty" min="0" max="100" step="1" value="0" style="display: inline-block; ">
                 <br>
-                <button type="button" class="btn" style="border-color:#ce1212" data-bs-toggle="modal" data-bs-target="#exampleModal{{ loop.index }}">
+                <button type="button" class="btn" style="border-color:#ce1212; border-width: 1.5px;" data-bs-toggle="modal" data-bs-target="#exampleModal{{ loop.index }}">
                   More details
                 </button>
 
@@ -134,7 +138,8 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
-                        {{ thing.description }}
+                        {{ thing.description }} <br>
+                        Tags: {{thing.tags}}
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -142,7 +147,7 @@
                     </div>
                   </div>
                 </div>
-                <button type="submit" class="btn" style="border-color:#ce1212"name="food_picked">Submit</button>
+                <button type="submit" class="btn" style="border-color:#1266f1; border-width: 1.5px;"name="food_picked">Submit</button>
                   </p>
                 </div>
               </form>
@@ -153,6 +158,6 @@
       </div>
   </div>
 </div>
-</div>
 </section>
+<!-- </section> -->
 {%endblock%}

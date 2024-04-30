@@ -1,24 +1,144 @@
 {%extends "base.html"%}
 {%block title%}Donate{%endblock%}
+{%block header%}
+<style>
+    @import "compass/css3";
+
+@import url(https://fonts.googleapis.com/css?family=Merriweather);
+
+*, 
+*:before, 
+*:after {
+   box-sizing:(border-box); 
+}
+
+html, body {
+  background: #f1f1f1;
+  font-family: 'Merriweather', sans-serif;
+  padding: 1em;
+}
+
+h1 {
+   text-align: center;
+   color: #a8a8a8;
+   text-shadow:(1px 1px 0 rgba(white, 1));
+}
+
+form {
+   max-width: 600px;
+   text-align: center;
+   margin: 20px auto;
+  
+  input, textarea {
+     border:0; outline:0;
+     padding: 1em;
+     text-shadow:border-radius(8px);
+     display: block;
+     width: 100%;
+     margin-top: 1em;
+     font-family: 'Merriweather', sans-serif;
+     box-shadow:(0 1px 1px rgba(black, 0.1));
+     resize: none;
+    
+    &:focus {
+      box-shadow:0 0px 2px rgba(rgba(206, 18, 18, 0.8), 1)!important;
+    }
+  }
+  
+  #input-submit {
+     color: white; 
+     background: rgba(206, 18, 18);
+     cursor: pointer;
+    
+    &:hover {
+       box-shadow:(0 1px 1px 1px rgba(#aaa, 0.6)); 
+    }
+  }
+  
+  textarea {
+      height: 126px;
+  }
+}
+
+
+.half {
+  float: left;
+  width: 48%;
+  margin-bottom: 1em;
+}
+
+.right { width: 50%; }
+
+.left {
+     margin-right: 2%; 
+}
+
+
+@media (max-width: 480px) {
+  .half {
+     width: 100%; 
+     float: none;
+     margin-bottom: 0; 
+  }
+}
+
+
+/* Clearfix */
+.cf:before,
+.cf:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.cf:after {
+    clear: both;
+}
+
+.dropdown-menu {         
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+</style>
+
+{%endblock%}
 {%block content%}
-    <section id="hero" class="hero d-flex align-items-center section-bg">
-<img src="/static/images/givingfoodai.jpg" alt="HE">
-<h1>Donate Items</h1>
-    <form method="post">
-        <div>
-            <label for="item_name">Item Name:</label>
-            <input type="text" id="item_name" name="item_name" required>
-        </div>
-        <div>
-            <label for="quantity">Quantity:</label>
-            <input type="number" id="quantity" name="quantity" required>
-        </div>
-        <div>
-            <label for="description">Description:</label>
-            <textarea id="description" name="description"></textarea>
-        </div>
-        <button type="submit">Donate</button>
-    </form>
+<section id="hero" class="hero ">
+<h1 style="color: black;">Donate Items</h1>
+
+<form method="POST">
+  <div class="half left cf">
+    <input type="text" id="item_name" name="item_name" placeholder="Name" required>
+    <input type="number" id="quantity" name="quantity" placeholder="Quantity">
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle btn-lg" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style="margin-top: 10px;">
+          Include tags
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          {%for tag in ("Vegan|Vegetarian|Gluten-free|Dairy-free|Nut-free|Non-GMO|Sugar-free|Halal|Kosher").split("|")%}
+          <li>
+            <label class="dropdown-item">
+              <input type="checkbox" class="form-check-input" name="selected_tags" value="{{tag}}"> {{tag}}
+            </label>
+          </li>
+          {%endfor%}
+        </ul>
+      </div>
+  </div>
+  <div class="half right cf">
+    <input type="text" id="desc" name="desc" placeholder="Description" required>
+    <br>
+    <select class="form-select" aria-label="Default select example" name="bank">
+      <option value="">Choose Bank</option>
+      <option value="default">Default</option>
+      <option value="second">Second</option>
+   </select>
+  </div>  
+  
+  <input type="submit" value="Submit" id="input-submit">
+</form>
+<br><br><br>
+
 {% if donation_success %}
 <p class="success-message">Thank you for your donation! Your contribution will make a difference.</p>
 {% endif %}

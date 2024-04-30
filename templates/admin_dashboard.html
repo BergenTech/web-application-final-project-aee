@@ -8,20 +8,20 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Email</th>
             <th>Item Name</th>
             <th>Quantity</th>
             <th>Description</th>
+            <th>Tags</th>
             <th>Action</th>
         </tr>
     </thead>
     <tbody class="table-body">
         {% for donation in pending_donations %}
         <tr class="table-row">
-            <td>{{ donation.user.email }}</td>
             <td>{{ donation.item_name }}</td>
             <td>{{ donation.quantity }}</td>
             <td>{{ donation.description }}</td>
+            <td>{{ donation.tags }}</td>
             <td>
                 <form method="post" action="{{ url_for('admin_approve_donation', donation_id=donation.id) }}">
                     <button type="submit" class="btn btn-success">Approve</button>
@@ -52,7 +52,7 @@
             {% for request in pending_requests %}
             <tr class="table-row">
                 <td>{{ request.email }}</td>
-                <td>{{ request.requested_food }}</td>
+                <td>{{ request.item_name }}</td>
                 <td>{{ request.quantity }}</td>
                 <td>{{ request.message }}</td>
                 <td>

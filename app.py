@@ -55,6 +55,8 @@ class User(db.Model, UserMixin):
     is_mfa_enabled = db.Column(db.Boolean, default=False)
     mfa_code = db.Column(db.String(255))
     phoneNumber = db.Column(db.String(255))
+    userdonations = db.relationship('Donation', backref='donor', lazy=True)
+
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -68,7 +70,7 @@ class Inventory(db.Model):
     name = db.Column(db.String)
     qty = db.Column(db.Integer)
     description = db.Column(db.String(255)) 
-    bank = db.Column(db.String)
+    bank = db.Column(db.String(255))
     tags = db.Column(db.String(255)) 
     total_tags = db.Column(db.String(255), default="Vegan|Vegetarian|Gluten-free|Dairy-free|Nut-free|Non-GMO|Sugar-free|Halal|Kosher")
 
@@ -84,7 +86,8 @@ class Donation(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(255))  
     status = db.Column(db.String(20), default='pending')
-    tags = db.Column(db.String(255))  
+    tags = db.Column(db.String(255)) 
+    bank = db.Column(db.String(255))
 
     user = db.relationship('User', backref=db.backref('donations', lazy=True))
 
@@ -97,6 +100,7 @@ class Request(db.Model):
     item_name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(255))  
     quantity = db.Column(db.Integer, nullable=False)
+    bank = db.Column(db.String(255))
     status = db.Column(db.String(20), default='pending')
 
     def __repr__(self):
@@ -171,10 +175,11 @@ def inventory():
                 flash(f"Please request a less than or equal amount of {item}'s quantity of {object.qty}", "danger")
                 session['cart'] = cart
                 return render_template("inventory.html", invent_list=all_inventory, cart=cart)
-            if cart:
-                if (item in list for list in cart):
-                    flash("You already have this requested", "danger")
-                    return render_template("inventory.html", invent_list=all_inventory, cart=cart)
+            # if cart:
+                # if (item in list for list in cart):
+                #     print(item)
+                #     flash("You already have this requested", "danger")
+                #     return render_template("inventory.html", invent_list=all_inventory, cart=cart)
 
             cart.append([item, qty])
             flash(f"Added {qty} {item} to cart", "success")
@@ -185,9 +190,7 @@ def inventory():
                     new_request = Request(item_name=item[0], quantity=item[1], email=current_user.email)
                     # Save the new donation to the database
                     db.session.add(new_request)
-                    print('almost')
                     db.session.commit()
-                    print('committed!!!')
                     # send_donation_notification_to_admin(new_request)
                     
                 except Exception as e:
@@ -358,17 +361,17 @@ def donate():
     if request.method == 'POST':
         user=current_user
         item_name = request.form.get('item_name')
-        quantity = request.form.get('quantity')
-        description = request.form.get('description')
-
-        # Validate form data
-        if not (item_name and quantity):
-            flash("Please fill in all fields.", "danger")
-            return redirect(url_for('donate'))
+        quantity = int(request.form.get('quantity'))
+        desc = request.form.get('desc')
+        bank = request.form["bank"]
+        selected_tags = request.form.getlist('selected_tags')
+        s='|'
+        tags= s.join(selected_tags)
+        print(tags)
 
         try:
             # Create a new donation instance
-            new_donation = Donation(user_id=user.id, item_name=item_name, quantity=quantity, description=description)
+            new_donation = Donation(user_id=user.id, item_name=item_name, quantity=quantity, description=desc, tags=tags, bank=bank)
 
             # Save the new donation to the database
             db.session.add(new_donation)
@@ -386,6 +389,7 @@ def donate():
             # Handle database errors or other exceptions
             # flash("An error occurred while processing your donation. Please try again later.", "danger")
             app.logger.error(f"Error processing donation: {e}")
+            flash("There has been an error somewhere", "danger")
             return redirect(url_for('donate'))
     return render_template('donate.html')
 
@@ -420,7 +424,7 @@ def profile():
     if not user.is_authenticated:
         return redirect(url_for('login'))
     
-    donated_items = Donation.query.filter_by(id=user.id).all() 
+    donated_items = user.userdonations
     requested_items = Request.query.filter_by(email=user.email).all()
     
     if request.method == 'POST':
@@ -444,7 +448,7 @@ def profile():
 # Admin Dashboard Route
 @app.route('/admin')
 def admin_dashboard():
-    pending_donations = db.session.query(Donation, User.email).join(User, Donation.user_id == User.id).filter(Donation.status == 'pending').all()
+    pending_donations = Donation.query.filter_by(status='pending').all()
     pending_requests = Request.query.filter_by(status='pending').all()
     users = User.query.all()
     return render_template('admin_dashboard.html', pending_donations=pending_donations, pending_requests=pending_requests, users=users)
@@ -478,7 +482,7 @@ def admin_approve_donation(donation_id):
     if inventory_item:
         inventory_item.qty += donation.quantity
     else:
-        inventory_item = Inventory(name=donation.item_name, qty=donation.quantity, description=donation.description)
+        inventory_item = Inventory(name=donation.item_name, qty=donation.quantity, description=donation.description, bank=donation.bank, tags=donation.tags)
         db.session.add(inventory_item)
     db.session.commit()
     flash('Donation approved and inventory updated successfully!', 'success')

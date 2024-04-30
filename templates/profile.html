@@ -1,50 +1,90 @@
 {%extends "base.html"%}
 {%block title%}Profile{%endblock%}
 {%block content%}
-<h1>Welcome, {{ user.name }}!</h1>
-<h2>User Profile</h2>
-<p>Email: {{ user.email }}</p>
 
-<h2>Donated Items</h2>
-{% if donated_items %}
-    <ul>
-        {% for item in donated_items %}
-            <li>{{ item.item_name }} - Quantity: {{ item.quantity }} - Status: {{ item.status }}</li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No donated items yet.</p>
-{% endif %}
+<!-- Current Profile items -->
+<!-- NEED TO: Add image to left and shift stuff over -->
+<div class="card mx-4 mx-md-5 shadow-5-strong" style="
+margin-top: 100px;
+background: hsla(0, 0%, 100%, 0.8);
+backdrop-filter: blur(30px);">
+    <div class="card-body py-5 px-md-4">
+        <div class="row d-flex justify-content-center">
+            <div class="text-center">
+                <h1>Welcome {{ user.name }}!</h2>
+                    <p>Email: {{ user.email }}</p>
+            </div>
+        </div>
+    </div>
+</div>
 
-<h2>Requested Items</h2>
-{% if requested_items %}
-    <ul>
-        {% for item in requested_items %}
-            <li>{{ item.item_name }} - Quantity: {{ item.quantity }} - Status: {{ item.status }}</li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No requested items yet.</p>
-{% endif %}
+<!-- Donated items -->
+<div class="row justify-content-around">
+    <div class="card mx-4 mx-md-5 shadow-5-strong" style="
+margin-top: 25px;
+background: hsla(0, 0%, 100%, 0.8);
+backdrop-filter: blur(30px);">
+        <div class="card-body py-5 px-md-4">
+            <div class="row d-flex justify-content-center">
+                <h1>Donated Items</h2>
+                    {% if donated_items %}
+                    <ul>
+                        {% for item in donated_items %}
+                        <li>{{ item.item_name }} - Quantity: {{ item.quantity }} - Status: {{ item.status }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p>No donated items yet.</p>
+                    {% endif %}
+            </div>
+        </div>
 
-<h2>Edit Profile</h2>
-<form method="post" action="{{ url_for('profile') }}" enctype="multipart/form-data">
-    <label for="profile_picture">Profile Picture:</label>
-    <input type="file" id="profile_picture" name="profile_picture">
-    <br>
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" value="{{ user.name }}">
-    <br>
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" value="{{ user.email }}">
-    <br>
-    <label for="password">New Password:</label>
-    <input type="password" id="password" name="password">
-    <br>
-    <label for="confirm_password">Confirm New Password:</label>
-    <input type="password" id="confirm_password" name="confirm_password">
-    <br>
-    <button type="submit">Save Changes</button>
-</form>
+        <!-- Requested items -->
+        <div class="col-md-5">
+            <div class="card mx-4 mx-md-5 shadow-5-strong" style="
+                margin-top: 25px;
+                background: hsla(0, 0%, 100%, 0.8);
+                backdrop-filter: blur(30px);
+            ">
+                <div class="card-body py-5 px-md-4">
+                    <div class="row d-flex justify-content-center">
+                        <div class="text-center">
+                            <h1>Requested Items</h2>
+                        </div>
+                        {% if requested_items %}
+                        <ul>
+                            {% for item in requested_items %}
+                            <li>{{ item.item_name }} - Quantity: {{ item.quantity }} - Status: {{ item.status }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>No requested items yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-{%endblock%}
+
+    <h2>Edit Profile</h2>
+    <form method="post" action="{{ url_for('profile') }}" enctype="multipart/form-data">
+        <label for="profile_picture">Profile Picture:</label>
+        <input type="file" id="profile_picture" name="profile_picture">
+        <br>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ user.name }}">
+        <br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ user.email }}">
+        <br>
+        <label for="password">New Password:</label>
+        <input type="password" id="password" name="password">
+        <br>
+        <label for="confirm_password">Confirm New Password:</label>
+        <input type="password" id="confirm_password" name="confirm_password">
+        <br>
+        <button type="submit">Save Changes</button>
+    </form>
+
+    {%endblock%}
