@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 import os, io
 from werkzeug.utils import secure_filename
 import csv
-from sqlalchemy import desc, asc
+from sqlalchemy import desc, asc, LargeBinary
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
@@ -16,6 +16,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 import random, string
 from twilio.rest import Client
 from sqlalchemy.orm import join
+import base64
 
 
 app = Flask(__name__)
@@ -56,6 +57,7 @@ class User(db.Model, UserMixin):
     mfa_code = db.Column(db.String(255))
     phoneNumber = db.Column(db.String(255))
     userdonations = db.relationship('Donation', backref='donor', lazy=True)
+    profile_picture = db.Column(db.LargeBinary)
 
 
     def set_password(self, password):
@@ -366,7 +368,7 @@ def donate():
         bank = request.form["bank"]
         selected_tags = request.form.getlist('selected_tags')
         s='|'
-        tags= s.join(selected_tags)
+        tags= '|' + s.join(selected_tags)
         print(tags)
 
         try:
@@ -412,9 +414,10 @@ def search():
     return render_template('search.html')
 
 def save_profile_picture(profile_picture):
-    filename = secure_filename(profile_picture.filename)
-    profile_picture.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    return filename
+    return profile_picture.read()
+
+def retrieve_profile_picture(profile_picture_data):
+    return base64.b64encode(profile_picture_data).decode('utf-8')
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -428,26 +431,41 @@ def profile():
     requested_items = Request.query.filter_by(email=user.email).all()
     
     if request.method == 'POST':
-        # Handle profile updates
         if 'profile_picture' in request.files:
             profile_picture = request.files['profile_picture']
-            user.profile_picture = save_profile_picture(profile_picture)
+            if profile_picture.filename != '':
+                user.profile_picture = save_profile_picture(profile_picture)
         user.name = request.form['name']
         user.email = request.form['email']
         new_password = request.form['password']
         confirm_password = request.form['confirm_password']
+        if new_password != '' and new_password == confirm_password:
+            user.set_password(new_password)
+        elif new_password != '' and new_password != confirm_password:
+            flash('Passwords do not match.', 'danger')
+            return redirect(url_for('profile'))
         if new_password and new_password == confirm_password:
             user.set_password(new_password)
-        db.session.commit()
-        flash('Profile updated successfully!', 'success')
-        return redirect(url_for('profile'))
+        try:
+            db.session.commit()
+            flash('Profile updated successfully!', 'success')
+            return redirect(url_for('profile'))
+        except Exception as e:
+            db.session.rollback()
+            flash('An error occurred while updating your profile. Please try again later.', 'danger')
+            app.logger.error(f'Error updating profile: {str(e)}')
+            return redirect(url_for('profile'))
     
     return render_template('profile.html', user=user, donated_items=donated_items, requested_items=requested_items)
 
 
 # Admin Dashboard Route
 @app.route('/admin')
+@login_required
 def admin_dashboard():
+    if current_user.email != 'mseceberrak@gmail.com':
+        flash('You are not authorized to access this page.', 'danger')
+        return redirect(url_for('index'))
     pending_donations = Donation.query.filter_by(status='pending').all()
     pending_requests = Request.query.filter_by(status='pending').all()
     users = User.query.all()
