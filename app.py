@@ -456,7 +456,7 @@ def profile():
             app.logger.error(f'Error updating profile: {str(e)}')
             return redirect(url_for('profile'))
     
-    return render_template('profile.html', user=user, donated_items=donated_items, requested_items=requested_items)
+    return render_template('profile.html', user=user, donated_items=donated_items, requested_items=requested_items, retrieve_profile_picture=retrieve_profile_picture)
 
 
 # Admin Dashboard Route

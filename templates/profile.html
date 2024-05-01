@@ -87,6 +87,12 @@ margin-top: 100px;
 background: hsla(0, 0%, 100%, 0.8);
 backdrop-filter: blur(30px);
 ">
+
+<div class="card mx-4 mx-md-5 shadow-5-strong" style="
+        margin-top: 100px;
+        background: hsla(0, 0%, 100%, 0.8);
+        backdrop-filter: blur(30px);
+    ">
         <div class="card-body py-5 px-md-4">
             <div class="row d-flex justify-content-center">
                 <div class="text-center">
@@ -97,13 +103,26 @@ backdrop-filter: blur(30px);
                         <label for="profile_picture">Profile Picture:</label>
                         <input type="file" id="profile_picture" name="profile_picture">
                         {% if user.profile_picture %}
-                        <img src="data:image/jpeg;base64,{{ retrieve_profile_picture(user.profile_picture) }}" alt="Profile Picture">
+                        <img style="width: 150px; height: 150px; border-radius: 50%; border: 2px solid #ccc; margin-top: 10px;" src="data:image/jpeg;base64,{{ retrieve_profile_picture(user.profile_picture) }}"
+                            alt="Profile Picture">
                         {% else %}
                         <p>No profile picture available</p>
                         {% endif %}
+
                         <br><br>
-                        <label for="name">Name:</label>
-                        <input type="text" id="name" name="name" value="{{ user.name }}">
+
+                        <div class="col-md-5 mb-4">
+                            <div data-mdb-input-init class="form-outline">
+                                <label for="name">Name:</label>
+                                <input type="text" id="name" name="name" value="{{ user.name }}">
+                            </div>
+                        </div>
+                        <div class="col-md-5 mb-4">
+                            <label for="name">Last Name:</label>
+                            <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}">
+                        </div>
+
+
                         <br>
                         <label for="email">Email:</label>
                         <input type="email" id="email" name="email" value="{{ user.email }}">
@@ -121,5 +140,5 @@ backdrop-filter: blur(30px);
         </div>
     </div>
 </div>
-
+</div>
 {%endblock%}
