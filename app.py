@@ -170,6 +170,7 @@ def inventory():
     cart = session.get('cart', [])
     if request.method == "POST":
         if "food_picked" in request.form:
+            #need to collect the bank this is from in order to seperate it from different banks (make sure this is true for donate and such too)
             item = request.form.get("item")
             object = Inventory.query.filter_by(name=item).first()
             qty = int(request.form.get("qty"))
@@ -456,7 +457,7 @@ def profile():
             app.logger.error(f'Error updating profile: {str(e)}')
             return redirect(url_for('profile'))
     
-    return render_template('profile.html', user=user, donated_items=donated_items, requested_items=requested_items)
+    return render_template('profile.html', user=user, donated_items=donated_items, requested_items=requested_items,  retrieve_profile_picture=retrieve_profile_picture)
 
 
 # Admin Dashboard Route
@@ -577,6 +578,12 @@ def upload():
         data = readFile()
         blah = addInvetnory(data)
     return render_template("csv.html")
+
+@app.route('/checkout' ,methods=["GET", "POST"])
+def checkout():
+    cart = session['cart']
+
+    return render_template("checkout.html", cart=cart)
 
 if __name__ == "__main__":
     app.secret_key = "super_secret_key" 

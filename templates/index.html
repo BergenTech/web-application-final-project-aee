@@ -11,8 +11,12 @@
           <h2 data-aos="fade-up">Welcome to Our<br>Food Pantry</h2>
           <p data-aos="fade-up" data-aos-delay="100">Helping Those in Need, One Meal at a Time.</p>
           <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
+            {% if not current_user.is_authenticated %}
+
             <a href="/register" class="btn-book-a-table">Create an Account</a>
-          </div>
+            {% else %}
+            <a href="/profile" class="btn-book-a-table">View Your Profile</a>
+            {% endif %}          </div>
         </div>
         <div class="col-lg-5 order-1 order-lg-2 text-center text-lg-start">
           <img src="static/assets/img/hero-img.png" class="img-fluid" alt="" data-aos="zoom-out" data-aos-delay="300">

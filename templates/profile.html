@@ -2,9 +2,15 @@
 {%block title%}Profile{%endblock%}
 {%block content%}
 
-<!-- PFP ON LEFT SIDEEEE -->
+<!-- PFP ON LEFT SIDEEEE 
+background-color: #6573b8;-->
+<style>
+    body{
+        background-color: #6573b8;
+    }
+</style>
 
-<div class="container">
+<div class="container" >
     <!-- Welcome card -->
     <div class="card mx-4 mx-md-5 shadow-5-strong" style="
         margin-top: 100px;
@@ -83,7 +89,7 @@
 
     <!-- Edit Profile -->
     <div class="card mx-4 mx-md-5 shadow-5-strong" style="
-margin-top: 100px;
+margin-top: 50px;
 background: hsla(0, 0%, 100%, 0.8);
 backdrop-filter: blur(30px);
 ">
@@ -91,31 +97,63 @@ backdrop-filter: blur(30px);
             <div class="row d-flex justify-content-center">
                 <div class="text-center">
                     <h1>Edit Profile</h1>
+                    <br><br>
                 </div>
                 <div class="text-right">
-                    <form method="post" action="{{ url_for('profile') }}" enctype="multipart/form-data">
-                        <label for="profile_picture">Profile Picture:</label>
-                        <input type="file" id="profile_picture" name="profile_picture">
-                        {% if user.profile_picture %}
-                        <img src="data:image/jpeg;base64,{{ retrieve_profile_picture(user.profile_picture) }}" alt="Profile Picture">
-                        {% else %}
-                        <p>No profile picture available</p>
-                        {% endif %}
-                        <br><br>
-                        <label for="name">Name:</label>
-                        <input type="text" id="name" name="name" value="{{ user.name }}">
-                        <br>
-                        <label for="email">Email:</label>
-                        <input type="email" id="email" name="email" value="{{ user.email }}">
-                        <br>
-                        <label for="password">New Password:</label>
-                        <input type="password" id="password" name="password">
-                        <br>
-                        <label for="confirm_password">Confirm New Password:</label>
-                        <input type="password" id="confirm_password" name="confirm_password">
-                        <br>
-                        <button type="submit">Save Changes</button>
-                    </form>
+                    <div class="row">
+
+                        <div class="col-md-6 mb-4">
+                            <form method="post" action="{{ url_for('profile') }}" enctype="multipart/form-data">
+                                <label for="profile_picture">Profile Picture:</label>
+                                <input type="file" id="profile_picture" name="profile_picture">
+                                {% if user.profile_picture %}
+                                <img style="width: 150px; height: 150px; border-radius: 50%; border: 2px solid #ccc; margin-top: 10px;" src="data:image/jpeg;base64,{{ retrieve_profile_picture(user.profile_picture) }}" alt="Profile Picture">
+                                {% else %}
+                                <p>No profile picture available</p>
+                                {% endif %}
+                            </form>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <div data-mdb-input-init class="form-outline">
+                                <label for="email">Email:</label>
+                                <input type="email" id="email" name="email" value="{{ user.email }}">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-42">
+                            <div data-mdb-input-init class="form-outline">
+                                <label for="name">Name:</label>
+                                <input type="text" id="name" name="name" value="{{ user.name }}">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <div data-mdb-input-init class="form-outline">
+                                <label for="last_name">Last Name:</label>
+                                <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <div data-mdb-input-init class="form-outline">
+                                <label for="password">New Password:</label>
+                                <input type="password" id="password" name="password">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div data-mdb-input-init class="form-outline">
+                                <label for="confirm_password">Confirm New Password:</label>
+                                <input type="password" id="confirm_password" name="confirm_password">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-danger btn-block mb-4">Save Changes</button>
+                    </div>
                 </div>
             </div>
         </div>
