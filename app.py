@@ -402,7 +402,7 @@ def donate():
             # Handle database errors or other exceptions
             # flash("An error occurred while processing your donation. Please try again later.", "danger")
             app.logger.error(f"Error processing donation: {e}")
-            flash("There has been an error somewhere", "danger")
+            # flash("There has been an error somewhere", "danger")
             return redirect(url_for('donate'))
     return render_template('donate.html')
 

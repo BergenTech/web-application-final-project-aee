@@ -58,7 +58,7 @@
                 <td>
                     <form method="post" action="{{ url_for('mark_request_as_picked_up', request_id=request.id) }}">
                         <button type="submit" class="btn btn-success">Picked Up</button>
-                    </form>     
+                    </form>
                     <form method="post" action="{{ url_for('admin_delete_request', request_id=request.id) }}" onsubmit="return confirm('Are you sure you want to delete this request?');">
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>           
@@ -86,9 +86,10 @@
             <td>{{ user.last_name }}</td>
             <td>{{ user.email }}</td>
             <td>
-                <a href="{{ url_for('admin_edit_user', user_id=user.id) }}">Edit</a> |
+                
+                <a class="btn btn-success" href="{{ url_for('admin_edit_user', user_id=user.id) }}">Edit</a> 
                 <form method="post" action="{{ url_for('admin_delete_user', user_id=user.id) }}" onsubmit="return confirm('Are you sure you want to delete this user?');">
-                    <button type="submit" class="btn">Delete</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
                 </form>            
             </td>
         </tr>

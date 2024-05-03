@@ -26,13 +26,13 @@
 <!-- <section id="hero" class="hero d-flex section-bg"> -->
 <!-- <section id="hero" class="hero d-flex align-items-center section-bg"> -->
 
-<section class="seperate ">
+<section class="seperate">
   <!-- top bar -->
   <nav class="navbar navbar-light bg-body-tertiary">
     <div class="container-fluid justibfy-content-end">
       <form class="d-flex input-group w-auto" action="/inventory" method="POST">
         <ul class="navbar-nav mr-auto">
-          <div class="form-floating mb-3 d-flex justify-content-end">
+          <div class="form-floating mb-3 d-flex justify-content-end" style="margin-top: 20px;">
             <li>
               <input
                 type="search"
@@ -67,7 +67,7 @@
               </div>
             </li>
         <li class="nav-item">
-          <button type="submit" class="btn" style = "background-color: #ce1212; color: white" name="search">SEARCH</button>
+          <button type="submit" class="btn btn-danger" name="search">SEARCH</button>
         </li>
     </div>
       </ul>
@@ -125,7 +125,7 @@
                 <p style="display: inline-block; margin-right: 10px;">Request:</p>
                 <input type="number" id="qty" name="qty" min="0" max="100" step="1" value="0" style="display: inline-block; ">
                 <br>
-                <button type="button" class="btn" style="border-color:#ce1212; border-width: 1.5px;" data-bs-toggle="modal" data-bs-target="#exampleModal{{ loop.index }}">
+                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModal{{ loop.index }}">
                   More details
                 </button>
 
@@ -147,7 +147,7 @@
                   </div>
                 </div>
                 
-                <button type="submit" class="btn" style="border-color:#1266f1; border-width: 1.5px;"name="food_picked">Submit</button>
+                <button type="submit" class="btn btn-outline-success" name="food_picked">Submit</button>
                   </p>
                 </div>
               </form>

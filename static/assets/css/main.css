@@ -6,6 +6,14 @@
 * License: https://bootstrapmade.com/license/
 */
 /*--------------------------------------------------------------
+# Scrollable card
+--------------------------------------------------------------*/
+.scrollable-card-body {
+  height: 200px; /* Set a fixed height for the card body */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+/*--------------------------------------------------------------
 # Flash
 --------------------------------------------------------------*/
 .flashes {
@@ -21,17 +29,17 @@
 }
 
 .danger {
-  background-color: #dea4a4;
+  background-color: #eab7b7;
   color: rgba(206, 18, 18, 0.8);
 }
 
 .success {
-  background-color: #a9c7fa;
+  background-color: #b6cef7;
   color: #1266f1;
 }
 
 .warning {
-  background-color: #6573b8;
+  background-color: #808dd0;
   color: #232d5e;
 }
 
@@ -47,6 +55,41 @@
   border: none;
   background: transparent;
   padding: 0;
+}
+
+/*--------------------------------------------------------------
+# Buttons
+--------------------------------------------------------------*/
+.btn-danger{
+  background-color: rgba(206, 18, 18);
+}
+
+.btn-success{
+  background-color: #1266f1;
+}
+
+.btn-outline-danger{
+  border-color:#ce1212;
+  border-width: 1.5px;
+  color:black;
+}
+
+.btn-outline-danger:hover{
+  border-color:#ce1212;
+  background-color:#ce1212;
+  color:white
+}
+
+.btn-outline-success{
+  border-color:#1266f1;
+  border-width: 1.5px;
+  color:black;
+}
+
+.btn-outline-success:hover{
+  border-color:#1266f1;
+  background-color:#1266f1;
+  color:white
 }
 /*--------------------------------------------------------------
 # Set main reusable colors and fonts using CSS variables

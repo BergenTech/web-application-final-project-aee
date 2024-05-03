@@ -6,7 +6,7 @@
 background-color: #6573b8;-->
 <style>
     body{
-        background-color: #6573b8;
+        background-color: #808dd0;
     }
 </style>
 
@@ -36,7 +36,7 @@ background-color: #6573b8;-->
             background: hsla(0, 0%, 100%, 0.8);
             backdrop-filter: blur(30px);
         ">
-                <div class="card-body py-5 px-md-3">
+                <div class="card-body py-5 px-md-3 scrollable-card-body">
                     <div class="text-center">
                         <h2>Donated Items</h2>
                     </div>
@@ -64,7 +64,7 @@ background-color: #6573b8;-->
             background: hsla(0, 0%, 100%, 0.8);
             backdrop-filter: blur(30px);
         ">
-                <div class="card-body py-5 px-md-3">
+                <div class="card-body py-5 px-md-3 scrollable-card-body">
                     <div class="text-center">
                         <h2>Requested Items</h2>
                     </div>
@@ -90,15 +90,11 @@ background-color: #6573b8;-->
     <!-- Edit Profile -->
     <div class="card mx-4 mx-md-5 shadow-5-strong" style="
 margin-top: 50px;
+margin-bottom: 50px;
 background: hsla(0, 0%, 100%, 0.8);
 backdrop-filter: blur(30px);
 ">
 
-<div class="card mx-4 mx-md-5 shadow-5-strong" style="
-        margin-top: 100px;
-        background: hsla(0, 0%, 100%, 0.8);
-        backdrop-filter: blur(30px);
-    ">
         <div class="card-body py-5 px-md-4">
             <div class="row d-flex justify-content-center">
                 <div class="text-center">
@@ -110,13 +106,16 @@ backdrop-filter: blur(30px);
                         <label for="profile_picture">Profile Picture:</label>
                         <input type="file" id="profile_picture" name="profile_picture">
                         {% if user.profile_picture %}
-                        <img src="data:image/jpeg;base64,{{ retrieve_profile_picture(user.profile_picture) }}" alt="Profile Picture">
+                        <img style="width: 100px; height: 100px; border-radius: 50%;" src="data:image/jpeg;base64,{{ retrieve_profile_picture(user.profile_picture) }}" alt="Profile Picture" width="100px">
                         {% else %}
                         <p>No profile picture available</p>
                         {% endif %}
                         <br><br>
                         <label for="name">Name:</label>
                         <input type="text" id="name" name="name" value="{{ user.name }}">
+                        <br>
+                        <label for="last_name">Last Name:</label>
+                        <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}">
                         <br>
                         <label for="email">Email:</label>
                         <input type="email" id="email" name="email" value="{{ user.email }}">
@@ -127,7 +126,7 @@ backdrop-filter: blur(30px);
                         <label for="confirm_password">Confirm New Password:</label>
                         <input type="password" id="confirm_password" name="confirm_password">
                         <br>
-                        <button type="submit">Save Changes</button>
+                        <button type="submit" class="btn btn-danger btn-block mb-4">Save Changes</button>
                     </form>
                 </div>
             </div>
