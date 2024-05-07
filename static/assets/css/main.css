@@ -1737,3 +1737,42 @@ section {
   color: #fff;
 }
 
+/*--------------------------------------------------------------
+# Profile Organization
+--------------------------------------------------------------*/
+.profile-container{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profile-left-column{
+  flex: 1;
+  margin-right: 10px;
+}
+
+.profile-right-column{
+  flex:1;
+}
+
+.profile-label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.profile-input {
+  width: 100%; /* Full width */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box; /* Include padding in width */
+}
+
+/* Style for profile picture */
+.profile-style-picture {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover; /* Maintain aspect ratio */
+}

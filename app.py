@@ -213,29 +213,27 @@ def inventory():
 
 @app.route('/checkout', methods=["GET", "POST"])
 def checkout():
-    if request.method == "GET":
-        print('d;kjhfaljkdahsf')
-    print("AHHHHHHHHHHHHHHHH")
     cart = session["cart"]
-    print(cart)
-    print("ahhh")
     if request.method == "POST":
-        for item in cart:
-            try:
-                # object.qty=int(object.qty -item[1])
-                new_request = Request(item_name=item[0], quantity=item[1], email=current_user.email)
-                # Save the new donation to the database
-                db.session.add(new_request)
-                db.session.commit()
-                # send_donation_notification_to_admin(new_request)
-                        
-            except Exception as e:
-                print('Error:', str(e))
-                db.session.rollback()
-                flash("There was an issue somewhere", "danger")
-                return render_template("checkout.html", cart=cart)
-            flash(f"Requested your items from default bank", "success")
-            session['cart'].clear()
+        if cart:
+            for item in cart:
+                try:
+                    # object.qty=int(object.qty -item[1])
+                    new_request = Request(item_name=item[0], quantity=item[1], email=current_user.email)
+                    # Save the new donation to the database
+                    db.session.add(new_request)
+                    db.session.commit()
+                    # send_donation_notification_to_admin(new_request)
+                            
+                except Exception as e:
+                    print('Error:', str(e))
+                    db.session.rollback()
+                    flash("There was an issue somewhere", "danger")
+                    return render_template("checkout.html", cart=cart)
+                flash(f"Requested your items from default bank", "success")
+                session['cart'].clear()
+        else:
+            flash(f"There is nothing in your cart!", "danger") 
     return render_template("checkout.html", cart=cart)
 
 
