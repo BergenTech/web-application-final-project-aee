@@ -193,6 +193,7 @@ def inventory():
             search_text = request.form["search_text"]
             bank = request.form["bank"]
             selected_tags = request.form.getlist('selected_tags')
+            print('ajkh')
             print(selected_tags)
             if selected_tags:
                 all_inventory = filter_inventory(selected_tags)

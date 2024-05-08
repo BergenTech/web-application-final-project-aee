@@ -109,7 +109,7 @@ backdrop-filter: blur(30px);
                                 <label for="profile_picture" class="profile-label">Profile Picture:</label>
                                 <input type="file" id="profile_picture" name="profile_picture">
                                 {% if user.profile_picture %}
-                                <img style="width: 100px; height: 100px; border-radius: 50%;"
+                                <img class="profile-style-picture"
                                     src="data:image/jpeg;base64,{{ retrieve_profile_picture(user.profile_picture) }}"
                                     alt="Profile Picture" width="100px">
                                 {% else %}
