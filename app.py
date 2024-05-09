@@ -59,6 +59,7 @@ class User(db.Model, UserMixin):
     userdonations = db.relationship('Donation', backref='donor', lazy=True)
     profile_picture = db.Column(db.LargeBinary)
 
+    donations = db.relationship('Donation', back_populates='user')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -91,7 +92,7 @@ class Donation(db.Model):
     tags = db.Column(db.String(255)) 
     bank = db.Column(db.String(255))
 
-    user = db.relationship('User', backref=db.backref('donations', lazy=True))
+    user = db.relationship('User', back_populates='donations')
 
     def __repr__(self):
         return f"Donation(id={self.id}, item_name='{self.item_name}', quantity={self.quantity}), description={self.description}"
@@ -197,16 +198,31 @@ def inventory():
             print(selected_tags)
             if selected_tags:
                 all_inventory = filter_inventory(selected_tags)
-            if bank and search_text:
-                all_inventory=Inventory.query.filter(getattr(Inventory, "name").ilike(f"%{search_text}%")).filter_by(bank = bank).all()
-            elif search_text:
-                all_inventory = Inventory.query.filter(
-                getattr(Inventory, "name").ilike(f"%{search_text}%")
-                ).all()
-            elif bank:
-                all_inventory = Inventory.query.filter(
-                getattr(Inventory, "bank").ilike(f"%{bank}%")
-                ).all()
+                print(type(all_inventory))
+                print((all_inventory))
+                if bank:
+                    new_list = []
+                    for item in all_inventory:
+                        if item.bank == bank:
+                            new_list.append(item)
+                    all_inventory = new_list
+                if search_text:
+                    new_list = []
+                    for item in all_inventory:
+                        if search_text in item.name:
+                            new_list.append(item)
+                    all_inventory = new_list         
+            else:
+                if bank and search_text:
+                    all_inventory=Inventory.query.filter(getattr(Inventory, "name").ilike(f"%{search_text}%")).filter_by(bank = bank).all()
+                elif search_text:
+                    all_inventory = Inventory.query.filter(
+                    getattr(Inventory, "name").ilike(f"%{search_text}%")
+                    ).all()
+                elif bank:
+                    all_inventory = Inventory.query.filter(
+                    getattr(Inventory, "bank").ilike(f"%{bank}%")
+                    ).all()
             return render_template("inventory.html", invent_list=all_inventory, cart=cart)
     
     session['cart'] = cart
@@ -370,6 +386,8 @@ def send_donation_notification_to_admin(donation):
 def donate():
     
     user=current_user
+    error_message = None
+    donation_success = False
     if request.method == 'POST':
         user=current_user
         item_name = request.form.get('item_name')
@@ -382,28 +400,23 @@ def donate():
         print(tags)
 
         try:
-            # Create a new donation instance
             new_donation = Donation(user_id=user.id, item_name=item_name, quantity=quantity, description=desc, tags=tags, bank=bank)
-
-            # Save the new donation to the database
             db.session.add(new_donation)
             db.session.commit()
             
             send_donation_notification_to_admin(new_donation)
 
-
+            donation_success = True
             flash("Donation successful! Thank you for your contribution.", "success")
-            user = current_user
-            donated_items = Donation.query.filter_by(id=user.id).all() 
-            
+            # user = current_user
+            # donated_items = Donation.query.filter_by(id=user.id).all() 
             return (redirect("/profile") & render_template('profile.html', user=user, donated_items=donated_items))
         except Exception as e:
-            # Handle database errors or other exceptions
-            # flash("An error occurred while processing your donation. Please try again later.", "danger")
+            error_message = "An error occurred while processing your donation. Please try again later."
             app.logger.error(f"Error processing donation: {e}")
-            # flash("There has been an error somewhere", "danger")
+            flash(error_message, "danger")
             return redirect(url_for('donate'))
-    return render_template('donate.html')
+    return render_template('donate.html', donation_success=donation_success, error_message=error_message)
 
 @app.route('/search', methods=['GET','POST'])
 def search():

@@ -1,3 +1,9 @@
+<!-- SAWarning: relationship 'Donation.user' will copy column user.id to column donation.user_id, which conflicts with relationship(s): 'Donation.donor' (copies user.id to donation.user_id), 'User.userdonations' (copies user.id to donation.user_id). If this is not 
+the intention, consider if these relationships should be linked with back_populates, or if viewonly=True should be applied to one or more if they are read-only. For the less common case that foreign key constraints are partially overlapping, the orm.foreign() annotation can be used to 
+isolate the columns that should be written towards.   To silence this warning, add the parameter 'overlaps="donor,userdonations"' to the 'Donation.user' relationship. (Background on this warning at: https://sqlalche.me/e/20/qzyx) (This warning originated from the `configure_mappers()` 
+process, which was invoked automatically in response to a user-initiated operation.) -->
+
+
 {%extends "base.html"%}
 {%block title%}Donate{%endblock%}
 {%block header%}
@@ -135,11 +141,11 @@ form {
 </form>
 <br><br><br>
 
-{% if donation_success %}
-<p class="success-message">Thank you for your donation! Your contribution will make a difference.</p>
+<!--{% if donation_success %}
+    <p class="success-message">Thank you for your donation! Your contribution will make a difference.</p>
 {% endif %}
 {% if error_message %}
-<p class="error-message">{{ error_message }}</p>
+    <p class="error-message">{{ error_message }}</p>
 {% endif %}
 </section>
-{%endblock%}
+{%endblock%}-->

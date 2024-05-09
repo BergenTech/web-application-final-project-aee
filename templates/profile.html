@@ -6,7 +6,7 @@
 background-color: #6573b8;-->
 <style>
     body {
-        background-color: #808dd0;
+        background-color: #6573b8;
     }
 </style>
 
@@ -20,8 +20,24 @@ background-color: #6573b8;-->
         <div class="card-body py-5 px-md-4">
             <div class="row d-flex justify-content-center">
                 <div class="text-center">
+                    {% if user.profile_picture %}
+                    <div class="row">
+                        <div class="col">
+                            <img class="profile-style-picture"
+                                src="data:image/jpeg;base64,{{ retrieve_profile_picture(user.profile_picture) }}"
+                                alt="Profile Picture" width="100px">
+                        </div>
+                        <div class="col">
+                            <div class="text-left">
+                                <h1>Welcome {{ user.name }}!</h1>
+                                <p>Email: {{ user.email }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
                     <h1>Welcome {{ user.name }}!</h1>
                     <p>Email: {{ user.email }}</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -118,7 +134,8 @@ backdrop-filter: blur(30px);
                             </div>
                             <div class="profile-right-column">
                                 <label for="email" class="profile-label">Email:</label>
-                                <input type="email" id="email" name="email" value="{{ user.email }}" class="profile-input">
+                                <input type="email" id="email" name="email" value="{{ user.email }}"
+                                    class="profile-input">
                             </div>
                         </div>
 
@@ -131,7 +148,8 @@ backdrop-filter: blur(30px);
                             </div>
                             <div class="profile-right-column">
                                 <label for="last_name" class="profile-label">Last Name:</label>
-                                <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" class="profile-input">
+                                <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}"
+                                    class="profile-input">
                             </div>
                         </div>
 
@@ -144,7 +162,8 @@ backdrop-filter: blur(30px);
                             </div>
                             <div class="profile-right-column">
                                 <label for="confirm_password" class="profile-label">Confirm New Password:</label>
-                                <input type="password" id="confirm_password" name="confirm_password" class="profile-input">
+                                <input type="password" id="confirm_password" name="confirm_password"
+                                    class="profile-input">
                             </div>
                         </div>
 
