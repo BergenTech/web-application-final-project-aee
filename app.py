@@ -33,11 +33,11 @@ app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USERNAME'] = 'emregemici@gmail.com'
+app.config['MAIL_USERNAME'] = 'foodle.eea@gmail.com'
 # Consider using app secrets or environment variables
-app.config['MAIL_PASSWORD'] = 'cxke ztxi bhac vqim'  
+app.config['MAIL_PASSWORD'] = 'bzvw rcua yzye mdwc'  
 # Set the default sender
-app.config['MAIL_DEFAULT_SENDER'] = 'emregemici@gmail.com'
+app.config['MAIL_DEFAULT_SENDER'] = 'foodle.eea@gmail.com'
 mail = Mail(app)
 
 # Database configuration
@@ -388,7 +388,7 @@ def donate():
     error_message = None
     donation_success = False
     if request.method == 'POST':
-        user=current_user
+        # user=current_user
         item_name = request.form.get('item_name')
         quantity = int(request.form.get('quantity'))
         desc = request.form.get('desc')
@@ -397,13 +397,14 @@ def donate():
         s='|'
         tags= '|' + s.join(selected_tags)
         print(tags)
+        user_email = user.email
 
         try:
             new_donation = Donation(user_id=user.id, item_name=item_name, quantity=quantity, description=desc, tags=tags, bank=bank)
             db.session.add(new_donation)
             db.session.commit()
             
-            send_donation_notification_to_admin(new_donation)
+            send_donation_notification_to_admin(new_donation, user_email)
 
             donation_success = True
             flash("Donation successful! Thank you for your contribution.", "success")
@@ -413,7 +414,7 @@ def donate():
         except Exception as e:
             error_message = "An error occurred while processing your donation. Please try again later."
             app.logger.error(f"Error processing donation: {e}")
-            flash(error_message, "danger")
+            # flash(error_message, "danger")
             return redirect(url_for('donate'))
     return render_template('donate.html', donation_success=donation_success, error_message=error_message)
 

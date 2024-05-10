@@ -19,15 +19,15 @@ background-color: #6573b8;-->
     ">
         <div class="card-body py-5 px-md-4">
             <div class="row d-flex justify-content-center">
-                <div class="text-center">
-                    {% if user.profile_picture %}
-                    <div class="row">
-                        <div class="col">
-                            <img class="profile-style-picture"
+                <div class="col-md-8">
+                    <div class="row align-items-center">
+                        {% if user.profile_picture %}
+                        <div class="col-md-4">
+                            <img class="user-style-picture"
                                 src="data:image/jpeg;base64,{{ retrieve_profile_picture(user.profile_picture) }}"
-                                alt="Profile Picture" width="100px">
+                                alt="Profile Picture">
                         </div>
-                        <div class="col">
+                        <div class="col-md-8">
                             <div class="text-left">
                                 <h1>Welcome {{ user.name }}!</h1>
                                 <p>Email: {{ user.email }}</p>
@@ -58,7 +58,7 @@ background-color: #6573b8;-->
                     </div>
                     <div class="row">
                         <div class="col">
-                            {% if donated_items %}
+                            <!-- {% if donated_items %}
                             <ul>
                                 {% for item in donated_items %}
                                 <li>{{ item.item_name }} - Quantity: {{ item.quantity }} - Status: {{ item.status }}
@@ -67,7 +67,10 @@ background-color: #6573b8;-->
                             </ul>
                             {% else %}
                             <p>No donated items yet.</p>
-                            {% endif %}
+                            {% endif %} -->
+                            {% for donation in current_user.userdonations %}
+                                    <li>{{ donation.item_name }} - Quantity: {{ donation.quantity }} - Status: {{ donation.status }}</li>
+                                {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -127,7 +130,7 @@ backdrop-filter: blur(30px);
                                 {% if user.profile_picture %}
                                 <img class="profile-style-picture"
                                     src="data:image/jpeg;base64,{{ retrieve_profile_picture(user.profile_picture) }}"
-                                    alt="Profile Picture" width="100px">
+                                    alt="Profile Picture">
                                 {% else %}
                                 <p>No profile picture available</p>
                                 {% endif %}
@@ -177,34 +180,36 @@ backdrop-filter: blur(30px);
         </div>
         <div>
             <form action="/profile" method="POST">
-            <button type="submit" class="btn btn-outline-success" name="recipe">Look at recipes!</button>
-        </form>
-        {%if recipes%}
+                <button type="submit" class="btn btn-outline-success" name="recipe">Look at recipes!</button>
+            </form>
+            {%if recipes%}
             {%for thing in recipes%}
-            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModal{{ loop.index }}">
+            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
+                data-bs-target="#exampleModal{{ loop.index }}">
                 {{thing["title"]}}
-              </button>
+            </button>
 
-              <div class="modal fade" id="exampleModal{{ loop.index }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-scrollable modal-lg">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="exampleModalLabel">{{ thing["title"] }}</h1>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal fade z-index-n1" id="exampleModal{{ loop.index }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-keyboard="false">
+                <div class="modal-dialog modal-dialog-scrollable z-index-n1	">
+                    <div class="modal-content z-index-n1	">
+                        <div class="modal-header z-index-n1	">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">{{ thing["title"] }}</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            {{ thing["ingredients"] }} <br>
+                            {{ thing["servings"] }} <br>
+                            {{ thing["instructions"] }} <br>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
                     </div>
-                    <div class="modal-body">
-                      {{ thing["ingredients"] }} <br>
-                      {{ thing["servings"] }} <br>
-                      {{ thing["instructions"] }} <br>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                  </div>
                 </div>
-              </div>
+            </div>
             {%endfor%}
-        {%endif%}
+            {%endif%}
+            
         </div>
     </div>
 </div>

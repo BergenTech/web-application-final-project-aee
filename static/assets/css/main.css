@@ -1776,3 +1776,10 @@ section {
   border-radius: 50%;
   object-fit: cover; 
 }
+
+.user-style-picture {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover; 
+}
