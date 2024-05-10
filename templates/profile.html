@@ -175,6 +175,37 @@ backdrop-filter: blur(30px);
                 </div>
             </div>
         </div>
+        <div>
+            <form action="/profile" method="POST">
+            <button type="submit" class="btn btn-outline-success" name="recipe">Look at recipes!</button>
+        </form>
+        {%if recipes%}
+            {%for thing in recipes%}
+            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModal{{ loop.index }}">
+                {{thing["title"]}}
+              </button>
+
+              <div class="modal fade" id="exampleModal{{ loop.index }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">{{ thing["title"] }}</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      {{ thing["ingredients"] }} <br>
+                      {{ thing["servings"] }} <br>
+                      {{ thing["instructions"] }} <br>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {%endfor%}
+        {%endif%}
+        </div>
     </div>
 </div>
 </div>

@@ -18,6 +18,9 @@ from twilio.rest import Client
 from sqlalchemy.orm import join
 import base64
 
+import http.client
+
+
 
 app = Flask(__name__)
 login_manager = LoginManager(app)
@@ -194,12 +197,8 @@ def inventory():
             search_text = request.form["search_text"]
             bank = request.form["bank"]
             selected_tags = request.form.getlist('selected_tags')
-            print('ajkh')
-            print(selected_tags)
             if selected_tags:
                 all_inventory = filter_inventory(selected_tags)
-                print(type(all_inventory))
-                print((all_inventory))
                 if bank:
                     new_list = []
                     for item in all_inventory:
@@ -442,6 +441,17 @@ def save_profile_picture(profile_picture):
 def retrieve_profile_picture(profile_picture_data):
     return base64.b64encode(profile_picture_data).decode('utf-8')
 
+recipes=[{"title": "Cereal Granola", "ingredients": "3/4 oz Rolled oats|3/4 oz Post Natural Bran Flakes|1/4 oz Almonds|1 tb Shredded coconut|1 tb Raisins", "servings": "1 Servings", "instructions": "Mix together. Serve with yogurt (1 M) or milk and 3/4 cup mixed berries (1 FR)."}, {"title": 
+"Cereal Gumdrop Bars Pd", "ingredients": "3 c Mini marshmallows|1/4 c Margarine or butter|1/2 ts Vanilla|1/4 ts Cinnamon|4 c Crispy corn puff cereal|1 c Slivered almonds|1 c Small gumdrops; halved", "servings": "24 Servings", "instructions": "Grease a 9x9 baking pan. Heat marshmallows and margarine in 3 quart saucepan over low heat until melted. Remove from heat; stir in vanilla and cinnamon. Fold in cereal, 2 cups at a time; fold in almonds and gumdrops. Press mix in pan with buttered back of spoon. Let stand at least 1 hour. Cut into bars."}, 
+     {"title": "Cereal  Killer Cookies", "ingredients": "2 1/4 c Oats, old fashioned|12 oz Almond brickle chips|1 2/3 c Flour|1 ts Baking soda|1 ts Baking powder|1/2 ts Salt|1 c Sugar, brown, dark|3/4 c Sugar|1 c Butter, sweet|2 lg Egg|1 tb Vanilla extract", "servings": "50 Cookies", "instructions": "Preheat the oven to 375. In a small bowl, mix the oats with the brickle chips. Sift the flour, baking soda, baking powder, and salt together. In a food processor, mix the sugars until blended, then gradually add the butter. Continue to process until creamy and smooth. Add the eggs and vanilla and process until blended. Add the flour mixture and process just until combined. Pour this mixture over the oats and brickle chips and stir until well combined. Using a 1/8 cup measure, scoop out dough and place 3 apart on ungreased cookied sheets. Bake 12 to 15 minutes, or until golden. Cool on wire racks. ---*The Cereal Murders* Diane Mott Davidson"}, 
+     {"title": "Cereal Kisses", "ingredients": "2 Egg Whites|1 c Sugar|1/2 ts Salt|1/2 ts Almond Extract|1 c Coconut, shredded|2 c Cereal, flaked", "servings": "3 Dozen", "instructions": "1. Beat egg whites until light, gradually beat in sugar and salt and continue beating until stiff. 2. Add flavoring and fold in coconut and cereal. 3. Drop from tip of a teaspoon onto greased cookiesheets. 4. Bake in 350 F oven for 15 -20 minutes."}, 
+     {"title": "Cereal Mix Snack", "ingredients": "1/3 c Vegetable oil|1/4 c \\table grind\\ Mrs. Dash or other no-salt seasoning|1/4 c Sodium-reduced soy sauce|18 c Mixed cereals & pretzels (toasted oats, mini Shredded Wheat, Chex--any variety)|1 1/2 c Dry roasted peanuts", "servings": "20 Servings", "instructions": "PREHEAT YOUR OVEN TO 275F. In a small saucepan, combine the oil, Mrs. Dash and soy sauce and heat just until hot. Combine the cereals and nuts in a large bowl. Pour the hot oil over the mixture, turning with a wooden spoon or spatula to cover evenly. Divide the mixture between 2 large deep roasting pans and bake for 1 hour, stirring 3 or 4 times during baking. Remove the pans from the oven, let cool and store in air-tight containers. It will last several weeks. Makes 20 Cups"}, {"title": "Cereal Party Snack", "ingredients": "1/4 c Butter or margarine|1 tb Worcestershire sauce|3 dr Hot pepper sauce|1 cn Salted mixed nuts (12-14 oz)|1 c Pretzel sticks, short, thin|4 c Assorted unsweetened cereal - (ready-to-eat)|1 ts Paprika|1/4 ts Onion powder|1 ds Garlic powder", "servings": "2 Quarts", "instructions": "Preheat oven to 250 F (very slow). Melt fat in a large baking pan in oven. Remove pan from oven; stir worcestershire sauce and hot pepper sauces into melted fat. Stir in nuts and pretzels; add cereals and mix well. Sprinkle with seasonings; stir. Heat uncovered in oven for 20 to 30 minutes. Serve warm or cooled. Store cooled cereal snack in lightly closed containers. If snack needs recrisping, reheat in slow oven for a few minutes. NOTE: Plain puffed cereals and bite-sized cereals may be used in this recipe. Calories per 1/2 cup serving: About 225"}, 
+      {"title": "Cereal Yogurt Bars", "ingredients": "1 1/2 c Grape Nuts cereal|3/4 c All-purpose flour|1/4 c Packed brown sugar|1/2 ts Cinnamon|1/2 c Butter or margarine|8 oz Fruit-flavored yogurt|1 Egg; slightly beaten|2 tb All-purpose flour", "servings": "12 Servings", "instructions": "Combine cereal, 3/4 cup flour, the sugar and cinnamon. Cut in butter until mixture is crumbly. Pat half of the mixture into greased 8\\ square pan. Combine yogurt, egg and 2 tablespoons flour; spread over crumb mixture in pan. Sprinkle with remaining crumb mixture. Bake at 350F degrees for 30-35 minutes. Cool in pan. Cut into bars or squares and remove from pan. Makes about 1 dozen."}, 
+      {"title": "Cereal-Peanut Bars", "ingredients": "1/2 c Light corn syrup|1/4 c Brown sugar|1 ds Salt|1 c Peanut butter|1 ts Vanilla|3 c Crisp rice cereal|1 pk (6-oz) semisweet chocolate pieces", "servings": "24 Servings", "instructions": "Combine 1/2 cup light corn syrup, 1/4 cup brown sugar, and dash salt in saucepan. Bring to full boil. Stir in 1 cup peanut butter. Remove from heat. Stir in 1 teaspoon vanilla, 3 cups crisp rice cereal, and one 6-ounce package (1 cup) semisweet chocolate pieces. Press into buttered 9x9x2-inch pan. Chill 1 hour. Cut in bars; store in refrigerator. Makes 2 dozen bars. RECIPEINTERNET LIST SERVER"}, 
+      {"title": "Cereals Without Boxtops", "ingredients": "USE THE FOLLOWING THIN BATTER:|2 c Flour|2 c Water; (or more)|1 ts Salt", "servings": "1 Servings", "instructions": "(Make cereals at home to resemble the snap, crackle and pop variety you buy in the store.) Mix lightly with spoon until free from lumps. (Beware of over-beating.) Cut hole in tip of a squirt bottle just large enough so batter will come through. (Strain batter if it is lumpy.) With this \'flowing pencil\', create designs on a cookie sheet. Bake at 400 degrees for about 10 minutes until cereals are brown and crisp"}, 
+      {"title": "Crunch Cereal", "ingredients": "3 c Rolled oats, quick-cooking|1 c Unsweetened wheat germ|1/2 c Coconut, flaked OR- shelled sunflower seeds|1 c Nuts, coarsely chopped|1 c Raisins|1/2 c Oil|1/2 c Honey|2 ts Vanilla", "servings": "15 Servings", "instructions": "Mix rolled oats, wheat germ, coconut or sunflower seeds, nuts, and raisins in a large bowl. Mix oil, honey, and vanilla. Pour over rolled oat mixture. Stir lightly until evenly mixed. Spread mixture on a 15- by 10- by 1-inch baking pan. Bake 1 hour, stirring each 15 minutes. Cool. Break up any large lumps. Store in an airtight container. Calories per 1/2 cup serving: About 280 with coconut; 290 with sunflower seeds"}]
+
+
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
@@ -454,6 +464,22 @@ def profile():
     requested_items = Request.query.filter_by(email=user.email).all()
     
     if request.method == 'POST':
+        if 'recipe' in request.form:
+            conn = http.client.HTTPSConnection("recipe-by-api-ninjas.p.rapidapi.com")
+
+            headers = {
+                'X-RapidAPI-Key': "974fc0b8eemsh33e142382a13e1ep1c0541jsn0ed27f02b095",
+                'X-RapidAPI-Host': "recipe-by-api-ninjas.p.rapidapi.com"
+            }
+
+            conn.request("GET", "/v1/recipe?query=cereal&offset=5", headers=headers)
+
+            res = conn.getresponse()
+            data = res.read()
+
+            print(data)
+            return render_template("profile.html", recipes=recipes, user=user, donated_items=donated_items, requested_items=requested_items, retrieve_profile_picture=retrieve_profile_picture)
+
         if 'profile_picture' in request.files:
             profile_picture = request.files['profile_picture']
             if profile_picture.filename != '':
@@ -478,6 +504,7 @@ def profile():
             flash('An error occurred while updating your profile. Please try again later.', 'danger')
             app.logger.error(f'Error updating profile: {str(e)}')
             return redirect(url_for('profile'))
+        
     
     return render_template('profile.html', user=user, donated_items=donated_items, requested_items=requested_items, retrieve_profile_picture=retrieve_profile_picture)
 
