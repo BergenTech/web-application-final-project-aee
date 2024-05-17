@@ -62,10 +62,22 @@
 --------------------------------------------------------------*/
 .btn-danger{
   background-color: rgba(206, 18, 18);
+  color:white
+}
+
+btn-danger:active{
+  background-color: rgba(206, 18, 18);
+  color:white
 }
 
 .btn-success{
   background-color: #1266f1;
+  color:white
+}
+
+.btn-success:active{
+  background-color: #1266f1;
+  color:white
 }
 
 .btn-outline-danger{
@@ -80,6 +92,12 @@
   color:white
 }
 
+.btn-outline-danger:active{
+  border-color:#ce1212;
+  background-color:#ce1212;
+  color:white
+}
+
 .btn-outline-success{
   border-color:#1266f1;
   border-width: 1.5px;
@@ -87,6 +105,12 @@
 }
 
 .btn-outline-success:hover{
+  border-color:#1266f1;
+  background-color:#1266f1;
+  color:white
+}
+
+.btn-outline-success:active{
   border-color:#1266f1;
   background-color:#1266f1;
   color:white

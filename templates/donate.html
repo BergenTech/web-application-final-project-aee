@@ -8,157 +8,169 @@ process, which was invoked automatically in response to a user-initiated operati
 {%block title%}Donate{%endblock%}
 {%block header%}
 <style>
-    @import "compass/css3";
+  @import "compass/css3";
 
-*, 
-*:before, 
-*:after {
-   box-sizing:(border-box); 
-}
-
-html, body {
-  background: #f1f1f1;
-  padding: 1em;
-}
-
-h1 {
-   text-align: center;
-   color: #a8a8a8;
-   text-shadow:(1px 1px 0 rgba(white, 1));
-}
-
-form {
-   max-width: 600px;
-   text-align: center;
-   margin: 20px auto;
-  
-  input, textarea {
-     border:0; outline:0;
-     padding: 1em;
-     text-shadow:border-radius(8px);
-     display: block;
-     width: 100%;
-     margin-top: 1em;
-     box-shadow:(0 1px 1px rgba(black, 0.1));
-     resize: none;
-    
-    &:focus {
-      box-shadow:0 0px 2px rgba(rgba(206, 18, 18, 0.8), 1)!important;
-    }
+  *,
+  *:before,
+  *:after {
+    box-sizing: (border-box);
   }
-  
-  #input-submit {
-     color: white; 
-     background: rgba(206, 18, 18);
-     cursor: pointer;
-    
-    &:hover {
-       box-shadow:(0 1px 1px 1px rgba(#aaa, 0.6)); 
-    }
+
+  html,
+  body {
+    background: #f1f1f1;
+    padding: 1em;
   }
-  
-  textarea {
+
+  h1 {
+    text-align: center;
+    color: #a8a8a8;
+    text-shadow: (1px 1px 0 rgba(white, 1));
+  }
+
+  form {
+    max-width: 600px;
+    text-align: center;
+    margin: 20px auto;
+
+    input,
+    textarea {
+      border: 0;
+      outline: 0;
+      padding: 1em;
+      text-shadow: border-radius(8px);
+      display: block;
+      width: 100%;
+      margin-top: 1em;
+      box-shadow: (0 1px 1px rgba(black, 0.1));
+      resize: none;
+
+      &:focus {
+        box-shadow: 0 0px 2px rgba(rgba(206, 18, 18, 0.8), 1) !important;
+      }
+    }
+
+    #input-submit {
+      color: white;
+      background: rgba(206, 18, 18);
+      cursor: pointer;
+
+      &:hover {
+        box-shadow: (0 1px 1px 1px rgba(#aaa, 0.6));
+      }
+    }
+
+    textarea {
       height: 126px;
+    }
   }
-}
 
 
-.half {
-  float: left;
-  width: 48%;
-  margin-bottom: 1em;
-}
-
-.right { width: 50%; }
-
-.left {
-     margin-right: 2%; 
-}
-
-
-@media (max-width: 480px) {
   .half {
-     width: 100%; 
-     float: none;
-     margin-bottom: 0; 
+    float: left;
+    width: 48%;
+    margin-bottom: 1em;
   }
-}
+
+  .right {
+    width: 50%;
+  }
+
+  .left {
+    margin-right: 2%;
+  }
 
 
-/* Clearfix */
-.cf:before,
-.cf:after {
-    content: " "; /* 1 */
-    display: table; /* 2 */
-}
+  @media (max-width: 480px) {
+    .half {
+      width: 100%;
+      float: none;
+      margin-bottom: 0;
+    }
+  }
 
-.cf:after {
+
+  /* Clearfix */
+  .cf:before,
+  .cf:after {
+    content: " ";
+    /* 1 */
+    display: table;
+    /* 2 */
+  }
+
+  .cf:after {
     clear: both;
-}
+  }
 
-.dropdown-menu {         
+  .dropdown-menu {
     max-height: 200px;
     overflow-y: auto;
   }
-
 </style>
 
 {%endblock%}
 {%block content%}
 <section id="hero" class="hero ">
-<h1 style="color: black;">Donate Items</h1>
+  <h1 style="color: black;">Donate Items</h1>
 
-<div class="container">
-  <!-- Donation Instructions -->
-  <div class="card my-4 shadow-5-strong" style="background: hsla(0, 0%, 100%, 0.8); backdrop-filter: blur(30px);">
-    <div class="card-body py-3 px-md-4">
-      <h5 class="card-title">How to Donate:</h5>
-      <p class="card-text">
-        Thank you for your generosity! When you donate an item, it will appear as "Pending" in your profile until the
-        pantry receives it. Once the pantry confirms receipt, your donation will be marked as "Approved".
-      </p>
-      <p class="card-text">
-        Please fill out the form below to complete your donation. If you have any questions or special instructions,
-        feel free to include them in the description.
-      </p>
-    </div>
-  </div>
-
-
-<form method="POST">
-  <div class="half left cf">
-    <input type="text" id="item_name" name="item_name" placeholder="Name" required>
-    <input type="number" id="quantity" name="quantity" placeholder="Quantity">
-    <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle btn-lg" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style="margin-top: 10px;">
-          Include tags
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          {%for tag in ("Vegan|Vegetarian|Gluten-free|Dairy-free|Nut-free|Non-GMO|Sugar-free|Halal|Kosher").split("|")%}
-          <li>
-            <label class="dropdown-item">
-              <input type="checkbox" class="form-check-input" name="selected_tags" value="{{tag}}"> {{tag}}
-            </label>
-          </li>
-          {%endfor%}
-        </ul>
+  <div class="container">
+    <!-- Donation Instructions -->
+    <div class="card my-4 shadow-5-strong" style="background: hsla(0, 0%, 100%, 0.8); backdrop-filter: blur(30px);">
+      <div class="card-body py-3 px-md-4">
+        <h5 class="card-title">How to Donate:</h5>
+        <p class="card-text">
+          Thank you for your generosity! When you donate an item, it will appear as "Pending" in your profile until the
+          pantry receives it. Once the pantry confirms receipt, your donation will be marked as "Approved".
+        </p>
+        <p class="card-text">
+          Please fill out the form below to complete your donation. If you have any questions or special instructions,
+          feel free to include them in the description.
+        </p>
       </div>
-  </div>
-  <div class="half right cf">
-    <input type="text" id="desc" name="desc" placeholder="Description" required>
-    <br>
-    <select class="form-select" aria-label="Default select example" name="bank">
-      <option value="">Choose Bank</option>
-      <option value="default">Default</option>
-      <option value="second">Second</option>
-   </select>
-  </div>  
-  
-  <input type="submit" value="Submit" id="input-submit">
-</form>
-<br><br><br>
+    </div>
 
-<!--{% if donation_success %}
+
+    <form method="POST">
+      <div class="half left cf">
+        <input type="text" id="item_name" name="item_name" placeholder="Name" required>
+        <input type="number" id="quantity" name="quantity" placeholder="Quantity">
+        <div style="text-align: left;">
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle btn-lg" type="button" id="dropdownMenuButton"
+              data-bs-toggle="dropdown" aria-expanded="false" style="margin-top: 18px; border-radius:0; padding:9px;">
+              Include tags
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              {%for tag in
+              ("Vegan|Vegetarian|Gluten-free|Dairy-free|Nut-free|Non-GMO|Sugar-free|Halal|Kosher").split("|")%}
+              <li>
+                <label class="dropdown-item">
+                  <input type="checkbox" class="form-check-input" name="selected_tags" value="{{tag}}"> {{tag}}
+                </label>
+              </li>
+              {%endfor%}
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="half right cf">
+        <input type="text" id="desc" name="desc" placeholder="Description" required>
+
+        <select class="form-select" aria-label="Default select example" name="bank"
+          style="border-color:white; padding: 15px; color:#757575; margin-top:1em; border-radius:0">
+          <option value="">Choose Bank</option>
+          <option value="default">Default</option>
+          <option value="second">Second</option>
+        </select>
+
+      </div>
+
+      <input type="submit" value="Submit" id="input-submit" style="font-size:20px; padding:10px; width:150px; margin-top: 29px;">
+    </form>
+    <br><br><br>
+
+    <!--{% if donation_success %}
     <p class="success-message">Thank you for your donation! Your contribution will make a difference.</p>
 {% endif %}
 {% if error_message %}

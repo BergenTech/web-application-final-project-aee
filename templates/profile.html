@@ -8,15 +8,16 @@ background-color: #6573b8;-->
     body {
         background-color: #6573b8;
     }
+    .modal {
+        z-index: 9999; /* Adjust as needed, should be higher than other elements */
+    }
 </style>
+
 
 <div class="container">
     <!-- Welcome card -->
-    <div class="card mx-4 mx-md-5 shadow-5-strong" style="
-        margin-top: 100px;
-        background: hsla(0, 0%, 100%, 0.8);
-        backdrop-filter: blur(30px);
-    ">
+    
+    <div class="card mx-4 mx-md-5 shadow-5-strong" style="margin-top: 100px; background: hsla(0, 0%, 100%, 0.8); backdrop-filter: blur(30px);">
         <div class="card-body py-5 px-md-4">
             <div class="row d-flex justify-content-center">
                 <div class="col-md-8">
@@ -69,8 +70,9 @@ background-color: #6573b8;-->
                             <p>No donated items yet.</p>
                             {% endif %} -->
                             {% for donation in current_user.userdonations %}
-                                    <li>{{ donation.item_name }} - Quantity: {{ donation.quantity }} - Status: {{ donation.status }}</li>
-                                {% endfor %}
+                            <li>{{ donation.item_name }} - Quantity: {{ donation.quantity }} - Status: {{
+                                donation.status }}</li>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -107,12 +109,7 @@ background-color: #6573b8;-->
     </div>
 
     <!-- Edit Profile -->
-    <div class="card mx-4 mx-md-5 shadow-5-strong" style="
-margin-top: 50px;
-margin-bottom: 50px;
-background: hsla(0, 0%, 100%, 0.8);
-backdrop-filter: blur(30px);
-">
+    <div class="card mx-4 mx-md-5 shadow-5-strong" style="margin-top: 50px; margin-bottom: 50px; background: hsla(0, 0%, 100%, 0.8); backdrop-filter: blur(30px);">
 
         <div class="card-body py-5 px-md-4">
             <div class="row d-flex justify-content-center">
@@ -171,47 +168,60 @@ backdrop-filter: blur(30px);
                         </div>
 
                         <br><br>
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-danger btn-block mb-4">Save Changes</button>
+                        <div class="profile-container">
+                            <div class="profile-left-column">
+                                <button type="submit" class="btn btn-danger btn-block mb-4">Save Changes</button>
+                            </div>
+                            <div class="profile-right-column">
+                                
+                                
+                            </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-        <div>
-            <form action="/profile" method="POST">
-                <button type="submit" class="btn btn-outline-success" name="recipe">Look at recipes!</button>
-            </form>
-            {%if recipes%}
-            {%for thing in recipes%}
-            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
-                data-bs-target="#exampleModal{{ loop.index }}">
-                {{thing["title"]}}
-            </button>
-
-            <div class="modal fade z-index-n1" id="exampleModal{{ loop.index }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-keyboard="false">
-                <div class="modal-dialog modal-dialog-scrollable z-index-n1	">
-                    <div class="modal-content z-index-n1	">
-                        <div class="modal-header z-index-n1	">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">{{ thing["title"] }}</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            {{ thing["ingredients"] }} <br>
-                            {{ thing["servings"] }} <br>
-                            {{ thing["instructions"] }} <br>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {%endfor%}
-            {%endif%}
-            
-        </div>
     </div>
 </div>
+<div class="container">
+    <h4>Need help choosing what to make with your requested items? Try this recipe generating using one of your items</h4>
+                <form action="/profile" method="POST">
+                    <select class="form-select" aria-label="Default select example" name="selected"
+          style="border-color:white; padding: 15px; color:#757575; margin-top:1em; border-radius:0">
+                    <option value="">Choose an Item!</option>
+                    {%for item in requested_items%}
+                    <option value='{{item.item_name}}'>{{item.item_name}}</option>
+                    {%endfor%}
+                 </select>
+                    <button type="submit" class="btn btn-outline-success" name="recipe">Look at recipes!</button>
+                </form>
+                {%if recipes%}
+                {%for thing in recipes%}
+                <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal{{ loop.index }}">
+                    {{thing["title"]}}
+                </button>
+
+                <div class="modal fade" id="exampleModal{{ loop.index }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">{{thing["title"]}}</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Serving Size: {{thing["servings"]}} <br><br>
+                            Ingredients: <br>
+                            {{thing.ingredients}} <br><br>
+                            Instructions: <br>
+                            {{thing.instructions}}
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                {%endfor%}
+                {%endif%}
 </div>
 {%endblock%}
