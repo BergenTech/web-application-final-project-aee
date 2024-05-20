@@ -182,9 +182,8 @@ def inventory():
                             session['cart'] = cart
                         else:
                             selected[1] = selected[1] + qty
+                            session['cart'] = cart
                             return render_template("inventory.html", invent_list=all_inventory, cart=cart) 
-                return render_template("inventory.html", invent_list=all_inventory, cart=cart)
-
             cart.append([item, qty, bank])
             flash(f"Added {qty} {item} to cart", "success")     
         elif "delete_cart_item" in request.form:
@@ -233,20 +232,22 @@ def checkout():
         if cart:
             for item in cart:
                 try:
+                    print('ah')
                     # object.qty=int(object.qty -item[1])
                     new_request = Request(item_name=item[0], quantity=item[1], email=current_user.email)
                     # Save the new donation to the database
                     db.session.add(new_request)
                     db.session.commit()
                     # send_donation_notification_to_admin(new_request)
+                    print("AHHHHHHHHHHHh")
                             
                 except Exception as e:
                     print('Error:', str(e))
                     db.session.rollback()
                     flash("There was an issue somewhere", "danger")
                     return render_template("checkout.html", cart=cart)
-                flash(f"Requested your items from default bank", "success")
-                session['cart'].clear()
+            flash(f"Requested your items from default bank", "success")
+            session['cart'].clear()
         else:
             flash(f"There is nothing in your cart!", "danger") 
     return render_template("checkout.html", cart=cart)

@@ -69,12 +69,17 @@ body {
         </tr>
         {%for item in cart%}
           <tr>
-            <th>{{item[0]}}</th>
-            <th>{{item[1]}}</th>
-            <th>{{item[2]}}</th>
-            <th><button type="submit" class="btn btn-outline-danger" name="delete_cart_item">
+            <td>{{item[0]}}</td>
+            <td>{{item[1]}}</td>
+            <td>{{item[2]}}</td>
+            <td>
+              <button type="submit" class="btn btn-outline-danger" name="delete_cart_item">
               <img src="https://cdn-icons-png.freepik.com/512/6861/6861362.png" alt="" width="15px">
-            </button></th>
+            </button>
+              <button type="submit" class="btn btn-outline-danger" name="edit_cart_item">
+              <img src="https://static-00.iconduck.com/assets.00/edit-icon-2048x2048-6svwfwto.png" alt="" width="15px">
+            </button>
+          </td>
           </tr>
           {%endfor%}
       </table>

@@ -3,67 +3,194 @@
 {% block content %}
 
 <style>
-   
-    .modal {
-        z-index: 9999;
+    body {
+        background: #f1f1f1;
+        font-family: Arial, sans-serif;
     }
-    .card {
-        background: hsla(0, 0%, 100%, 0.8);
-        backdrop-filter: blur(30px);
-        border: none;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+
     .container {
-        margin-top: 100px;
+        max-width: 900px;
+        margin: auto;
+        padding: 20px;
     }
+
+    .card {
+        background: hsla(0, 0%, 100%, 0.9);
+        backdrop-filter: blur(30px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .card h1, .card h2, .card p {
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .card h1 {
+        font-size: 2em;
+        text-align: center;
+    }
+
+    .card h2 {
+        font-size: 1.5em;
+        text-align: center;
+        margin-bottom: 1em;
+    }
+
+    .card p {
+        font-size: 1em;
+        line-height: 1.6;
+        text-align: center;
+    }
+
     .profile-container {
         display: flex;
         justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
     }
+
+    .profile-left-column, .profile-right-column {
+        flex: 1;
+    }
+
+    .profile-left-column {
+        margin-right: 20px;
+    }
+
+    .profile-right-column {
+        margin-left: 20px;
+    }
+
     .profile-label {
+        display: block;
+        margin-bottom: 10px;
         font-weight: bold;
+        color: #444;
     }
+
     .profile-input {
         width: 100%;
         padding: 10px;
-        border-radius: 5px;
         border: 1px solid #ccc;
-        margin-bottom: 10px;
-    }
-    .btn {
-        background-color: #ff6f61;
-        color: #fff;
-        border: none;
-        padding: 10px 20px;
         border-radius: 5px;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
     }
-    .btn:hover {
-        background-color: #ff5a47;
-    }
-    .form-select {
-        border-color: white;
-        padding: 15px;
-        color: #757575;
-        margin-top: 1em;
-        border-radius: 0;
+
+    .user-style-picture, .profile-style-picture {
         width: 100%;
+        border-radius: 50%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
     }
+
+    .scrollable-card-body {
+        max-height: 300px;
+        overflow-y: auto;
+        padding-right: 15px;
+    }
+
+    .btn {
+        display: inline-block;
+        font-weight: 400;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        user-select: none;
+        border: 1px solid transparent;
+        padding: 10px 20px;
+        font-size: 1rem;
+        line-height: 1.5;
+        border-radius: 5px;
+        transition: all 0.15s ease-in-out;
+        background-color: #ce1212; /* Matching theme color */
+        color: white;
+    }
+
+    .btn:hover {
+        background-color: #a80c0c; /* Darker shade for hover effect */
+    }
+
+    .modal {
+        z-index: 9999; /* Adjust as needed, should be higher than other elements */
+    }
+
+    .modal-dialog {
+        max-width: 800px;
+        margin: 1.75rem auto;
+    }
+
     .modal-content {
         border-radius: 10px;
-        padding: 20px;
     }
-    .modal-header {
+
+    .modal-header, .modal-footer {
         border-bottom: none;
-    }
-    .modal-body {
-        padding: 20px;
-    }
-    .modal-footer {
         border-top: none;
     }
+
+    .modal-title {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #444;
+    }
+
+    .btn-close {
+        font-size: 1.5em;
+        background: none;
+        border: none;
+        color: #444;
+    }
+
+    .btn-close:hover {
+        color: #000;
+    }
+
+    .btn-light {
+        color: #333;
+        background-color: #f8f9fa;
+        border-color: #f8f9fa;
+    }
+
+    .btn-light:hover {
+        color: #333;
+        background-color: #e2e6ea;
+        border-color: #dae0e5;
+    }
+
+    .form-select {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+
+    .dropdown-menu {
+        max-height: 200px;
+        overflow-y: auto;
+      }
+    
+      .dropdown-toggle.btn-lg {
+        border-radius: 0;
+        padding: 9px;
+      }
+    
 </style>
 
+<br><br><br><br><br><br>
 <div class="container">
     <!-- Welcome card -->
     <div class="card mx-4 mx-md-5 shadow-5-strong">
@@ -200,45 +327,47 @@
         </div>
     </div>
 </div>
-
 <div class="container">
-    <h4>Need help choosing what to make with your requested items? Try this recipe generator using one of your items</h4>
-    <form action="/profile" method="POST">
-        <select class="form-select" aria-label="Default select example" name="selected">
-            <option value="">Choose an Item!</option>
-            {% for item in requested_items %}
-            <option value='{{ item.item_name }}'>{{ item.item_name }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit" class="btn btn-outline-success" name="recipe" style="margin-top: 10px;">Look at recipes!</button>
-    </form>
-    {% if recipes %}
-    {% for thing in recipes %}
-    <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal{{ loop.index }}" style="margin-top: 10px;">
-        {{ thing["title"] }}
-    </button>
-    <div class="modal fade" id="exampleModal{{ loop.index }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">{{ thing["title"] }}</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="card mx-4 mx-md-5 shadow-5-strong" style="margin-top: 50px; margin-bottom: 50px;">
+        <div class="card-body py-5 px-md-4">
+            <div class="text-center">
+                <h4>Need help choosing what to make with your requested items? Try this recipe generating using one of your items</h4><br>
+                <form action="/profile" method="POST">
+                     <select class="form-select" aria-label="Default select example" name="selected" >
+                        <option value="">Choose an Item!</option>
+                       {% for item in requested_items %}
+                       <option value='{{item.item_name}}'>{{item.item_name}}</option>
+                       {% endfor %}
+                   </select><br>
+                  <button type="submit" class="btn btn-outline-success" name="recipe">Look at recipes!</button>
+               </form>
+               {% if recipes %}
+               {% for thing in recipes %}
+                <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal{{ loop.index }}" style="margin-top: 10px;">
+            {{ thing["title"] }}
+                </button>
+              <div class="modal fade" id="exampleModal{{ loop.index }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                     <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">{{ thing["title"] }}</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Serving Size: {{thing["servings"]}} <br><br>
+                        Ingredients: <br>
+                        {{thing.ingredients}} <br><br>
+                        Instructions: <br>
+                        {{thing.instructions}}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    Serving Size: {{thing["servings"]}} <br><br>
-                    Ingredients: <br>
-                    {{thing.ingredients}} <br><br>
-                    Instructions: <br>
-                    {{thing.instructions}}
-                </div>
-                <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
             </div>
         </div>
-        {%endfor%}
-        {%endif%}
+        {% endfor %}
+        {% endif %}
+    </div>
 </div>
-
 {%endblock%}
