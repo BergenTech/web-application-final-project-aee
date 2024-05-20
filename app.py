@@ -35,10 +35,12 @@ app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USERNAME'] = 'foodle.eea@gmail.com'
 # Consider using app secrets or environment variables
-app.config['MAIL_PASSWORD'] = 'bzvw rcua yzye mdwc'  
+app.config['MAIL_PASSWORD'] = 'vyou cpqn maow oqhp'  
 # Set the default sender
 app.config['MAIL_DEFAULT_SENDER'] = 'foodle.eea@gmail.com'
+app.config['MAIL_DEBUG'] = True
 mail = Mail(app)
+
 
 # Database configuration
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///library.db"
@@ -56,8 +58,6 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(255), nullable=False)
     email_verification_token = db.Column(db.String(255))
     is_verified = db.Column(db.Boolean, default=False)
-    is_mfa_enabled = db.Column(db.Boolean, default=False)
-    mfa_code = db.Column(db.String(255))
     phoneNumber = db.Column(db.String(255))
     userdonations = db.relationship('Donation', backref='donor', lazy=True)
     profile_picture = db.Column(db.LargeBinary)
@@ -142,16 +142,7 @@ def send_verification_email(user):
     msg.body = f"Click the following link to verify your email: {verification_link}"
     mail.send(msg)
     
-# Send MFA message
-def send_mfa(code):
-    account_sid = 'AC82ab96ca53c90d4a9ee731e8b527068a'
-    auth_token = '41b0fc3c652de108afb4d4ce90c80430'
-    client = Client(account_sid, auth_token)
-    message = client.messages.create(
-    from_ = '+18447223757' ,
-    body = code,
-    to='+18777804236'
-)
+
 
 #routes
 @app.route('/')
@@ -177,17 +168,24 @@ def inventory():
             item = request.form.get("item")
             object = Inventory.query.filter_by(name=item).first()
             qty = int(request.form.get("qty"))
+            bank = request.form.get("bank")
+
             if qty > object.qty:
                 flash(f"Please request a less than or equal amount of {item}'s quantity of {object.qty}", "danger")
                 session['cart'] = cart
                 return render_template("inventory.html", invent_list=all_inventory, cart=cart)
-            # if cart:
-                # if (item in list for list in cart):
-                #     print(item)
-                #     flash("You already have this requested", "danger")
-                #     return render_template("inventory.html", invent_list=all_inventory, cart=cart)
+            if cart:
+                for selected in cart:
+                    if item == selected[0] and bank == selected[2]:
+                        if (selected[1] + qty) > object.qty:
+                            flash(f"Please request a less than or equal amount of {item}'s quantity of {object.qty}", "danger")
+                            session['cart'] = cart
+                        else:
+                            selected[1] = selected[1] + qty
+                            return render_template("inventory.html", invent_list=all_inventory, cart=cart) 
+                return render_template("inventory.html", invent_list=all_inventory, cart=cart)
 
-            cart.append([item, qty])
+            cart.append([item, qty, bank])
             flash(f"Added {qty} {item} to cart", "success")     
         elif "delete_cart_item" in request.form:
             item_index = int(request.form.get('item_index'))
@@ -228,6 +226,7 @@ def inventory():
     return render_template("inventory.html", invent_list=all_inventory, cart=cart)
 
 @app.route('/checkout', methods=["GET", "POST"])
+@login_required
 def checkout():
     cart = session["cart"]
     if request.method == "POST":
@@ -268,7 +267,6 @@ def register():
         password = request.form.get("password")
         confirm_password = request.form.get("confirm_password")
         accept_terms = request.form.get("accept_terms")
-        is_mfa_enabled = request.form.get("mfa")
         phoneNumber = request.form.get("phoneNumber")
 
         # Validate form data (add your own validation logic)
@@ -299,7 +297,6 @@ def register():
             last_name=last_name,
             email=email,
             email_verification_token=generate_verification_token(),
-            is_mfa_enabled= True if is_mfa_enabled else False,
             phoneNumber = phoneNumber
         )
         new_user.set_password(password)
@@ -324,16 +321,6 @@ def login():
         
         if user and user.check_password(password):
             if not user.email_verification_token:
-                if user.is_mfa_enabled:
-                    session["user_ID"]= user.id
-                    # Generate a random 6-digit integer
-                    code = random.randint(100000, 999999)
-                    user.mfa_code = code
-                    db.session.commit()
-                    send_mfa(code)
-                    flash("Multi-Factor Authentication Code Sent!", "success")
-                    return render_template("verify_mfa.html")
-                else:
                     login_user(user)
                     session['user_ID'] =user.id
                     flash("Logged in successfully!", "success")
@@ -343,29 +330,6 @@ def login():
         else:
             flash("Invalid credentials!","danger")
     return render_template("login.html")
-
-# Create an Multi-Factor Authentication Route:
-@app.route("/verify_mfa", methods=["GET", "POST"])
-def verify_mfa():
-    id = session.get('user_id')
-    user = User.query.filter_by(id=id).first()
-    if user:
-        if request.method == 'GET':
-            return render_template("verify_mfa.html")
-        else:
-            code = request.form.get('mfa_code')
-            if user.mfa_code == code:
-                user.mfa_code = None
-                db.session.commit()
-                login_user(user)
-                flash("Logged in successfully!", "success")
-                return redirect(url_for('index')) 
-            else:
-                flash("Incorrect Code!", "danger")
-                return redirect(url_for('verify_mfa')) 
-    else:
-        flash("Try to login first!.", "danger")
-    return redirect(url_for("login"))  # Redirect to login or home page
 
 @app.route("/logout")
 @login_required
@@ -619,6 +583,9 @@ def upload():
         blah = addInvetnory(data)
     return render_template("csv.html")
 
+@app.route("/tos")
+def tos():
+    return render_template("tos.html")
 
 if __name__ == "__main__":
     app.secret_key = "super_secret_key" 

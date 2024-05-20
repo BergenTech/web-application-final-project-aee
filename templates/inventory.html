@@ -89,6 +89,7 @@
                 <div class="card row">
                   <div class="col">{{ item[0] }}</div>
                   <div class="col">{{ item[1] }}</div>
+                  <div class="col">{{ item[2] }}</div>
                   <input type="hidden" name="item_index" value="{{ loop.index }}">
                   <button type="submit" class="btn btn-light" name="delete_cart_item">
                     <img src="https://cdn-icons-png.freepik.com/512/6861/6861362.png" alt="" width="15px">
@@ -117,6 +118,7 @@
                 <div class="card-body">
                   <input type="hidden" name="item" value="{{ thing.name }}">
                   <h5 class="card-title">{{thing.name}}</h5>
+                  <input type="hidden" name="bank" value="{{ thing.bank }}">
                   <h6>At the {{thing.bank}} bank</h6>
                   <p class="card-text">
                     <label for="qty">Quantity: {{thing.qty}}</label>

@@ -1,32 +1,79 @@
-{%extends "base.html"%}
-{%block title%}Profile{%endblock%}
-{%block content%}
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
 
-<!-- PFP ON LEFT SIDEEEE 
-background-color: #6573b8;-->
 <style>
-    body {
-        background-color: #6573b8;
-    }
+   
     .modal {
-        z-index: 9999; /* Adjust as needed, should be higher than other elements */
+        z-index: 9999;
+    }
+    .card {
+        background: hsla(0, 0%, 100%, 0.8);
+        backdrop-filter: blur(30px);
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .container {
+        margin-top: 100px;
+    }
+    .profile-container {
+        display: flex;
+        justify-content: space-between;
+    }
+    .profile-label {
+        font-weight: bold;
+    }
+    .profile-input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+    }
+    .btn {
+        background-color: #ff6f61;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+    }
+    .btn:hover {
+        background-color: #ff5a47;
+    }
+    .form-select {
+        border-color: white;
+        padding: 15px;
+        color: #757575;
+        margin-top: 1em;
+        border-radius: 0;
+        width: 100%;
+    }
+    .modal-content {
+        border-radius: 10px;
+        padding: 20px;
+    }
+    .modal-header {
+        border-bottom: none;
+    }
+    .modal-body {
+        padding: 20px;
+    }
+    .modal-footer {
+        border-top: none;
     }
 </style>
 
-
 <div class="container">
     <!-- Welcome card -->
-    
-    <div class="card mx-4 mx-md-5 shadow-5-strong" style="margin-top: 100px; background: hsla(0, 0%, 100%, 0.8); backdrop-filter: blur(30px);">
+    <div class="card mx-4 mx-md-5 shadow-5-strong">
         <div class="card-body py-5 px-md-4">
             <div class="row d-flex justify-content-center">
                 <div class="col-md-8">
                     <div class="row align-items-center">
                         {% if user.profile_picture %}
                         <div class="col-md-4">
-                            <img class="user-style-picture"
-                                src="data:image/jpeg;base64,{{ retrieve_profile_picture(user.profile_picture) }}"
-                                alt="Profile Picture">
+                            <img class="user-style-picture" src="data:image/jpeg;base64,{{ retrieve_profile_picture(user.profile_picture) }}" alt="Profile Picture" style="width: 100%; border-radius: 50%;">
                         </div>
                         <div class="col-md-8">
                             <div class="text-left">
@@ -34,11 +81,13 @@ background-color: #6573b8;-->
                                 <p>Email: {{ user.email }}</p>
                             </div>
                         </div>
+                        {% else %}
+                        <div class="col-12 text-center">
+                            <h1>Welcome {{ user.name }}!</h1>
+                            <p>Email: {{ user.email }}</p>
+                        </div>
+                        {% endif %}
                     </div>
-                    {% else %}
-                    <h1>Welcome {{ user.name }}!</h1>
-                    <p>Email: {{ user.email }}</p>
-                    {% endif %}
                 </div>
             </div>
         </div>
@@ -46,33 +95,24 @@ background-color: #6573b8;-->
 
     <!-- Donated and Requested items -->
     <div class="row mt-5">
-
         <!-- Donated items -->
         <div class="col-md-6 pr-1">
-            <div class="card shadow-5-strong" style="
-            background: hsla(0, 0%, 100%, 0.8);
-            backdrop-filter: blur(30px);
-        ">
+            <div class="card shadow-5-strong">
                 <div class="card-body py-5 px-md-3 scrollable-card-body">
                     <div class="text-center">
                         <h2>Donated Items</h2>
                     </div>
                     <div class="row">
                         <div class="col">
-                            <!-- {% if donated_items %}
+                            {% if current_user.userdonations %}
                             <ul>
-                                {% for item in donated_items %}
-                                <li>{{ item.item_name }} - Quantity: {{ item.quantity }} - Status: {{ item.status }}
-                                </li>
+                                {% for donation in current_user.userdonations %}
+                                <li>{{ donation.item_name }} - Quantity: {{ donation.quantity }} - Status: {{ donation.status }}</li>
                                 {% endfor %}
                             </ul>
                             {% else %}
                             <p>No donated items yet.</p>
-                            {% endif %} -->
-                            {% for donation in current_user.userdonations %}
-                            <li>{{ donation.item_name }} - Quantity: {{ donation.quantity }} - Status: {{
-                                donation.status }}</li>
-                            {% endfor %}
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -81,10 +121,7 @@ background-color: #6573b8;-->
 
         <!-- Requested items -->
         <div class="col-md-6 pl-1">
-            <div class="card shadow-5-strong" style="
-            background: hsla(0, 0%, 100%, 0.8);
-            backdrop-filter: blur(30px);
-        ">
+            <div class="card shadow-5-strong">
                 <div class="card-body py-5 px-md-3 scrollable-card-body">
                     <div class="text-center">
                         <h2>Requested Items</h2>
@@ -94,8 +131,7 @@ background-color: #6573b8;-->
                             {% if requested_items %}
                             <ul>
                                 {% for item in requested_items %}
-                                <li>{{ item.item_name }} - Quantity: {{ item.quantity }} - Status: {{ item.status }}
-                                </li>
+                                <li>{{ item.item_name }} - Quantity: {{ item.quantity }} - Status: {{ item.status }}</li>
                                 {% endfor %}
                             </ul>
                             {% else %}
@@ -109,8 +145,7 @@ background-color: #6573b8;-->
     </div>
 
     <!-- Edit Profile -->
-    <div class="card mx-4 mx-md-5 shadow-5-strong" style="margin-top: 50px; margin-bottom: 50px; background: hsla(0, 0%, 100%, 0.8); backdrop-filter: blur(30px);">
-
+    <div class="card mx-4 mx-md-5 shadow-5-strong" style="margin-top: 50px; margin-bottom: 50px;">
         <div class="card-body py-5 px-md-4">
             <div class="row d-flex justify-content-center">
                 <div class="text-center">
@@ -119,28 +154,21 @@ background-color: #6573b8;-->
                 </div>
                 <div class="text-right">
                     <form method="post" action="{{ url_for('profile') }}" enctype="multipart/form-data">
-
                         <div class="profile-container">
                             <div class="profile-left-column">
                                 <label for="profile_picture" class="profile-label">Profile Picture:</label>
-                                <input type="file" id="profile_picture" name="profile_picture">
+                                <input type="file" id="profile_picture" name="profile_picture" class="profile-input">
                                 {% if user.profile_picture %}
-                                <img class="profile-style-picture"
-                                    src="data:image/jpeg;base64,{{ retrieve_profile_picture(user.profile_picture) }}"
-                                    alt="Profile Picture">
+                                <img class="profile-style-picture" src="data:image/jpeg;base64,{{ retrieve_profile_picture(user.profile_picture) }}" alt="Profile Picture" style="width: 100px; border-radius: 50%; margin-top: 10px;">
                                 {% else %}
                                 <p>No profile picture available</p>
                                 {% endif %}
                             </div>
                             <div class="profile-right-column">
                                 <label for="email" class="profile-label">Email:</label>
-                                <input type="email" id="email" name="email" value="{{ user.email }}"
-                                    class="profile-input">
+                                <input type="email" id="email" name="email" value="{{ user.email }}" class="profile-input">
                             </div>
                         </div>
-
-                        <br>
-
                         <div class="profile-container">
                             <div class="profile-left-column">
                                 <label for="name" class="profile-label">Name:</label>
@@ -148,13 +176,9 @@ background-color: #6573b8;-->
                             </div>
                             <div class="profile-right-column">
                                 <label for="last_name" class="profile-label">Last Name:</label>
-                                <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}"
-                                    class="profile-input">
+                                <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" class="profile-input">
                             </div>
                         </div>
-
-                        <br>
-
                         <div class="profile-container">
                             <div class="profile-left-column">
                                 <label for="password" class="profile-label">New Password:</label>
@@ -162,19 +186,12 @@ background-color: #6573b8;-->
                             </div>
                             <div class="profile-right-column">
                                 <label for="confirm_password" class="profile-label">Confirm New Password:</label>
-                                <input type="password" id="confirm_password" name="confirm_password"
-                                    class="profile-input">
+                                <input type="password" id="confirm_password" name="confirm_password" class="profile-input">
                             </div>
                         </div>
-
-                        <br><br>
                         <div class="profile-container">
                             <div class="profile-left-column">
                                 <button type="submit" class="btn btn-danger btn-block mb-4">Save Changes</button>
-                            </div>
-                            <div class="profile-right-column">
-                                
-                                
                             </div>
                         </div>
                     </form>
@@ -183,45 +200,45 @@ background-color: #6573b8;-->
         </div>
     </div>
 </div>
-<div class="container">
-    <h4>Need help choosing what to make with your requested items? Try this recipe generating using one of your items</h4>
-                <form action="/profile" method="POST">
-                    <select class="form-select" aria-label="Default select example" name="selected"
-          style="border-color:white; padding: 15px; color:#757575; margin-top:1em; border-radius:0">
-                    <option value="">Choose an Item!</option>
-                    {%for item in requested_items%}
-                    <option value='{{item.item_name}}'>{{item.item_name}}</option>
-                    {%endfor%}
-                 </select>
-                    <button type="submit" class="btn btn-outline-success" name="recipe">Look at recipes!</button>
-                </form>
-                {%if recipes%}
-                {%for thing in recipes%}
-                <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal{{ loop.index }}">
-                    {{thing["title"]}}
-                </button>
 
-                <div class="modal fade" id="exampleModal{{ loop.index }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">{{thing["title"]}}</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            Serving Size: {{thing["servings"]}} <br><br>
-                            Ingredients: <br>
-                            {{thing.ingredients}} <br><br>
-                            Instructions: <br>
-                            {{thing.instructions}}
-                        </div>
-                        <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                    </div>
+<div class="container">
+    <h4>Need help choosing what to make with your requested items? Try this recipe generator using one of your items</h4>
+    <form action="/profile" method="POST">
+        <select class="form-select" aria-label="Default select example" name="selected">
+            <option value="">Choose an Item!</option>
+            {% for item in requested_items %}
+            <option value='{{ item.item_name }}'>{{ item.item_name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-outline-success" name="recipe" style="margin-top: 10px;">Look at recipes!</button>
+    </form>
+    {% if recipes %}
+    {% for thing in recipes %}
+    <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal{{ loop.index }}" style="margin-top: 10px;">
+        {{ thing["title"] }}
+    </button>
+    <div class="modal fade" id="exampleModal{{ loop.index }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">{{ thing["title"] }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                {%endfor%}
-                {%endif%}
+                <div class="modal-body">
+                    Serving Size: {{thing["servings"]}} <br><br>
+                    Ingredients: <br>
+                    {{thing.ingredients}} <br><br>
+                    Instructions: <br>
+                    {{thing.instructions}}
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+            </div>
+        </div>
+        {%endfor%}
+        {%endif%}
 </div>
+
 {%endblock%}
