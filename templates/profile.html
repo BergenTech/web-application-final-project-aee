@@ -4,7 +4,7 @@
 
 <style>
     body {
-        background: #f1f1f1;
+        background: #374172;
         font-family: Arial, sans-serif;
     }
 
@@ -94,27 +94,6 @@
         max-height: 300px;
         overflow-y: auto;
         padding-right: 15px;
-    }
-
-    .btn {
-        display: inline-block;
-        font-weight: 400;
-        text-align: center;
-        white-space: nowrap;
-        vertical-align: middle;
-        user-select: none;
-        border: 1px solid transparent;
-        padding: 10px 20px;
-        font-size: 1rem;
-        line-height: 1.5;
-        border-radius: 5px;
-        transition: all 0.15s ease-in-out;
-        background-color: #ce1212; /* Matching theme color */
-        color: white;
-    }
-
-    .btn:hover {
-        background-color: #a80c0c; /* Darker shade for hover effect */
     }
 
     .modal {
@@ -286,7 +265,7 @@
                                 <label for="profile_picture" class="profile-label">Profile Picture:</label>
                                 <input type="file" id="profile_picture" name="profile_picture" class="profile-input">
                                 {% if user.profile_picture %}
-                                <img class="profile-style-picture" src="data:image/jpeg;base64,{{ retrieve_profile_picture(user.profile_picture) }}" alt="Profile Picture" style="width: 100px; border-radius: 50%; margin-top: 10px;">
+                                <img class="profile-style-picture" src="data:image/jpeg;base64,{{ retrieve_profile_picture(user.profile_picture) }}" alt="Profile Picture" style="width: 100px; border-radius: 50%; margin-top: 10px; float:right">
                                 {% else %}
                                 <p>No profile picture available</p>
                                 {% endif %}
@@ -326,9 +305,7 @@
             </div>
         </div>
     </div>
-</div>
-<div class="container">
-    <div class="card mx-4 mx-md-5 shadow-5-strong" style="margin-top: 50px; margin-bottom: 50px;">
+    <div class="card mx-4 mx-md-5 shadow-5-strong" style="margin-top: 50px; margin-bottom: 50px;">    
         <div class="card-body py-5 px-md-4">
             <div class="text-center">
                 <h4>Need help choosing what to make with your requested items? Try this recipe generating using one of your items</h4><br>
@@ -341,6 +318,27 @@
                    </select><br>
                   <button type="submit" class="btn btn-outline-success" name="recipe">Look at recipes!</button>
                </form>
+               <br>
+               <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                More details
+              </button>
+        
+              <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">test</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      RAHHHHHHHHHHHHHHH
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
                {% if recipes %}
                {% for thing in recipes %}
                 <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#exampleModal{{ loop.index }}" style="margin-top: 10px;">
@@ -370,4 +368,7 @@
         {% endif %}
     </div>
 </div>
+</div>
+</div>
+
 {%endblock%}

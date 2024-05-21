@@ -29,18 +29,18 @@
 }
 
 .danger {
-  background-color: #e59c9c;
-  color: rgba(107, 10, 10, 0.8);
+  background-color: #EB9090;
+  color: #870C0C;
 }
 
 .success {
-  background-color: #a2dba7;
-  color: #008209;
+  background-color: #A6BEE4;
+  color: #072E6C;
 }
 
 .warning {
-  background-color: #ebdc88;
-  color: #3e2f03;
+  background-color: #A5ACCC;
+  color: #364176;
 }
 
 .close {

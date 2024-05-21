@@ -1,3 +1,9 @@
+#list of issues: 
+#profile picture unavalible when account is first created, needs to be reuploaded to work (REGISTER)
+#Modals on profile.html for recipes do not work (ISSUE IS CAUSED BY THE DIV ABOVE IT BUT ONLY THE "CARD" CLASS)
+#fixing thing to show something else if recipe generator does not work
+#
+
 #imports
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
@@ -17,7 +23,6 @@ import random, string
 from twilio.rest import Client
 from sqlalchemy.orm import join
 import base64
-
 import requests
 
 
@@ -40,7 +45,6 @@ app.config['MAIL_PASSWORD'] = 'vyou cpqn maow oqhp'
 app.config['MAIL_DEFAULT_SENDER'] = 'foodle.eea@gmail.com'
 app.config['MAIL_DEBUG'] = True
 mail = Mail(app)
-
 
 # Database configuration
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///library.db"
@@ -69,7 +73,6 @@ class User(db.Model, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-
 
 class Inventory(db.Model):
     id= db.Column(db.Integer, primary_key=True)
@@ -141,8 +144,6 @@ def send_verification_email(user):
     msg = Message("Verify Your Email", recipients=[user.email])
     msg.body = f"Click the following link to verify your email: {verification_link}"
     mail.send(msg)
-    
-
 
 #routes
 @app.route('/')
@@ -220,27 +221,26 @@ def inventory():
                     getattr(Inventory, "bank").ilike(f"%{bank}%")
                     ).all()
             return render_template("inventory.html", invent_list=all_inventory, cart=cart)
-    
     session['cart'] = cart
     return render_template("inventory.html", invent_list=all_inventory, cart=cart)
 
 @app.route('/checkout', methods=["GET", "POST"])
 @login_required
 def checkout():
-    cart = session["cart"]
+    try:
+        cart = session["cart"]
+    except:
+        flash("Please put items in the cart before going to the checkout!", "warning")
+        return render_template("inventory.html")
     if request.method == "POST":
         if cart:
             for item in cart:
                 try:
-                    print('ah')
                     # object.qty=int(object.qty -item[1])
                     new_request = Request(item_name=item[0], quantity=item[1], email=current_user.email)
-                    # Save the new donation to the database
                     db.session.add(new_request)
                     db.session.commit()
-                    # send_donation_notification_to_admin(new_request)
-                    print("AHHHHHHHHHHHh")
-                            
+                    # send_donation_notification_to_admin(new_request)                            
                 except Exception as e:
                     print('Error:', str(e))
                     db.session.rollback()
@@ -433,6 +433,9 @@ def profile():
 
             response = requests.get(url, headers=headers, params=querystring)
             response = response.json()
+            if response == None:
+                print("adslkj")
+                response="nothing"
 
             return render_template("profile.html", recipes=response, user=user, donated_items=donated_items, requested_items=requested_items, retrieve_profile_picture=retrieve_profile_picture)
 
