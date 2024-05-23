@@ -24,7 +24,8 @@ from twilio.rest import Client
 from sqlalchemy.orm import join
 import base64
 import requests
-
+import secrets
+import smtplib
 
 
 app = Flask(__name__)
@@ -65,6 +66,8 @@ class User(db.Model, UserMixin):
     phoneNumber = db.Column(db.String(255))
     userdonations = db.relationship('Donation', backref='donor', lazy=True)
     profile_picture = db.Column(db.LargeBinary)
+    reset_token = db.Column(db.String(255)) 
+
 
     donations = db.relationship('Donation', back_populates='user')
 
@@ -344,6 +347,50 @@ def send_donation_notification_to_admin(donation):
     msg = Message("New Pending Donation", recipients=[admin_email])
     msg.body = f"New pending donation:\nItem: {donation.item_name}\nQuantity: {donation.quantity}\nDescription: {donation.description}"
     mail.send(msg)
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        user = User.query.filter_by(email=email).first()
+        if user:
+            token = secrets.token_urlsafe()
+            user.reset_token = token
+            db.session.commit()
+            send_reset_email(user.email, token)
+            flash('A password reset link has been sent to your email.', 'info')
+        else:
+            flash('Email not found', 'danger')
+    return render_template('forgot_password.html')
+
+def send_reset_email(email, token):
+    token=token
+    
+    reset_link = f"https://63hsl2h0-1000.use.devtunnels.ms/reset-password/{token}"
+    msg = Message("Password Reset Request", recipients=[email])
+    msg.body = f'Click the link to reset your password: {reset_link}'
+    mail.send(msg)
+
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    user = User.query.filter_by(reset_token=token).first()
+    if not user:
+        flash('Invalid or expired token', 'danger')
+        return redirect(url_for('forgot_password'))
+    
+    if request.method == 'POST':
+        new_password = request.form['password']
+        confirm_password = request.form['confirm_password']
+        if new_password == confirm_password:
+            user.set_password(new_password)
+            user.reset_token = None  # Clear the reset token
+            db.session.commit()
+            flash('Password reset successful!', 'success')
+            return redirect(url_for('login'))
+        else:
+            flash('Passwords do not match.', 'danger')
+    
+    return render_template('reset_password.html', token=token)
+
 
 @app.route('/donate', methods=['GET','POST'])
 @login_required

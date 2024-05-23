@@ -34,13 +34,13 @@
 }
 
 .success {
-  background-color: #A6BEE4;
-  color: #072E6C;
+  background-color: #b6df7d;
+  color: #384f18;
 }
 
 .warning {
-  background-color: #A5ACCC;
-  color: #364176;
+  background-color: #f0bfc1;
+  color: #b83137;
 }
 
 .close {
@@ -61,22 +61,29 @@
 # Buttons
 --------------------------------------------------------------*/
 .btn-danger{
-  background-color: rgba(206, 18, 18);
+  background-color: #ce1212;
   color:white
 }
 
 btn-danger:active{
-  background-color: rgba(206, 18, 18);
+  background-color: #ce1212;
   color:white
 }
 
 .btn-success{
-  background-color: #1266f1;
+  background-color: #789c44;
+  border-color: #789c44;
+  color:white
+}
+
+.btn-success:hover{
+  background-color: #8cb750;
+  border-color: #8cb750;
   color:white
 }
 
 .btn-success:active{
-  background-color: #1266f1;
+  background-color: #789c44;
   color:white
 }
 
@@ -99,20 +106,20 @@ btn-danger:active{
 }
 
 .btn-outline-success{
-  border-color:#1266f1;
+  border-color:#789c44;
   border-width: 1.5px;
   color:black;
 }
 
 .btn-outline-success:hover{
-  border-color:#1266f1;
-  background-color:#1266f1;
+  border-color:#789c44;
+  background-color:#789c44;
   color:white
 }
 
 .btn-outline-success:active{
-  border-color:#1266f1;
-  background-color:#1266f1;
+  border-color:#789c44;
+  background-color:#789c44;
   color:white
 }
 /*--------------------------------------------------------------

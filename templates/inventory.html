@@ -2,6 +2,10 @@
 {%block title%}Inventory{%endblock%}
 
 <style>
+  body {
+    background: #f1f1f1;
+    padding: 1em;
+  }
   .card {
     /* Add shadows to create the "card" effect */
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
@@ -100,7 +104,7 @@
             {% endfor %}
           </form>
             <li>
-              <a class="btn btn-primary" href="/checkout" role="button">Go to Checkout</a>
+              <a class="btn btn-success" href="/checkout" role="button">Go to Checkout</a>
             </li>
           
         </ul>

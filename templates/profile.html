@@ -4,7 +4,7 @@
 
 <style>
     body {
-        background: #374172;
+        background: #f1f1f1;
         font-family: Arial, sans-serif;
     }
 
@@ -53,7 +53,6 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
     }
 
     .profile-left-column, .profile-right-column {
@@ -251,7 +250,7 @@
     </div>
 
     <!-- Edit Profile -->
-    <div class="card mx-4 mx-md-5 shadow-5-strong" style="margin-top: 50px; margin-bottom: 50px;">
+    <div class="card mx-4 mx-md-5 shadow-5-strong" style="margin-top: 20px; ">
         <div class="card-body py-5 px-md-4">
             <div class="row d-flex justify-content-center">
                 <div class="text-center">
@@ -265,7 +264,7 @@
                                 <label for="profile_picture" class="profile-label">Profile Picture:</label>
                                 <input type="file" id="profile_picture" name="profile_picture" class="profile-input">
                                 {% if user.profile_picture %}
-                                <img class="profile-style-picture" src="data:image/jpeg;base64,{{ retrieve_profile_picture(user.profile_picture) }}" alt="Profile Picture" style="width: 100px; border-radius: 50%; margin-top: 10px; float:right">
+                                <img class="profile-style-picture" src="data:image/jpeg;base64,{{ retrieve_profile_picture(user.profile_picture) }}" alt="Profile Picture" style="width: 100px; border-radius: 50%; margin-top: 10px;">
                                 {% else %}
                                 <p>No profile picture available</p>
                                 {% endif %}
@@ -285,7 +284,7 @@
                                 <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" class="profile-input">
                             </div>
                         </div>
-                        <div class="profile-container">
+                        <div class="profile-container" style="margin-top:20px">
                             <div class="profile-left-column">
                                 <label for="password" class="profile-label">New Password:</label>
                                 <input type="password" id="password" name="password" class="profile-input">
@@ -295,10 +294,8 @@
                                 <input type="password" id="confirm_password" name="confirm_password" class="profile-input">
                             </div>
                         </div>
-                        <div class="profile-container">
-                            <div class="profile-left-column">
-                                <button type="submit" class="btn btn-danger btn-block mb-4">Save Changes</button>
-                            </div>
+                        <div class="profile-container" style="margin-top:30px">
+                            <button type="submit" class="btn btn-danger btn-block mb-4" style="display: block; margin: 0 auto;">Save Changes</button>
                         </div>
                     </form>
                 </div>
