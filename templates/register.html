@@ -2,17 +2,11 @@
 {% block title %}Register{% endblock %}
 {% block content %}
 
-<!-- Section: Design Block -->
+
 <section class="text-center">
-  <!-- Background image -->
-  <div class="p-5 bg-image" style="
-        background-image: url('https://mdbootstrap.com/img/new/textures/full/171.jpg');
-        height: 300px;
-        "></div>
-  <!-- Background image -->
 
   <div class="card mx-4 mx-md-5 shadow-5-strong" style="
-        margin-top: -100px;
+        margin-top: 20px;
         background: hsla(0, 0%, 100%, 0.8);
         backdrop-filter: blur(30px);
         ">
@@ -24,13 +18,13 @@
           <form method="POST" action="/register">
             <!-- 2 column grid layout with text inputs for the first and last names -->
             <div class="row">
-              <div class="col-md-6 mb-4">
+              <div class="col-md-6 mb-2">
                 <div data-mdb-input-init class="form-outline">
-                  <input type="text" id="form3Example1" class="form-control" name="name"/>
-                  <label class="form-label" for="form3Example1"  required >First name</label>
+                  <input type="text" id="form3Example1" class="form-control" name="name" />
+                  <label class="form-label" for="form3Example1" required>First name</label>
                 </div>
               </div>
-              <div class="col-md-6 mb-4">
+              <div class="col-md-6 mb-2">
                 <div data-mdb-input-init class="form-outline">
                   <input type="text" id="form3Example2" class="form-control" name="last_name" required>
                   <label class="form-label" for="form3Example2">Last name</label>
@@ -39,44 +33,49 @@
             </div>
 
             <!-- Email input -->
-            <div data-mdb-input-init class="form-outline mb-4">
-              <input type="email" id="form3Example3" class="form-control" name="email" required/>
+            <div data-mdb-input-init class="form-outline mb-2">
+              <input type="email" id="form3Example3" class="form-control" name="email" required />
               <label class="form-label" for="form3Example3">Email address</label>
             </div>
 
+            <!-- Password input -->
             <div class="row">
-              <div class="col-md-6 mb-4">
-                <div data-mdb-input-init class="form-outline">
-                  <input type="password" id="form3Example4" class="form-control" name="password" required/>
+              <div class="col-md-6">
+                <div data-mdb-input-init class="form-outline mb-2">
+                  <input type="password" id="form3Example4" class="form-control" name="password" required />
                   <label class="form-label" for="form3Example4">Password</label>
                 </div>
               </div>
-              <div class="col-md-6 mb-4">
-                <div data-mdb-input-init class="form-outline mb-4">
+              <div class="col-md-6">
+                <div data-mdb-input-init class="form-outline mb-2">
                   <input type="password" id="form3Example4" class="form-control" name="confirm_password" />
-                  <label class="form-label" for="form3Example4"  required>Confirm Password</label>
+                  <label class="form-label" for="form3Example4" required>Confirm Password</label>
                 </div>
               </div>
             </div>
 
-            <!-- Password input -->
-            <div data-mdb-input-init class="form-outline mb-4">
-              <input type="file" class="form-control" name="image" accept=".jpg, .png" required>
+            <!-- File input for profile picture -->
+            <div data-mdb-input-init class="form-outline mb-3">
+              <input type="file" class="form-control" name="profile_picture" accept=".jpg, .png" />
+              <label class="form-label" for="profile_picture">Profile Picture (optional)</label>
             </div>
 
             <!-- Checkbox -->
-            
-            <div class="form-check d-flex justify-content-center mb-4">
-              <input class="form-check-input me-2" type="checkbox" value="accepted" id="form2Example33" name="accept_terms" required/>
+
+            <div class="form-check d-flex justify-content-center mb-2">
+              <input class="form-check-input me-2" type="checkbox" value="accepted" id="form2Example33"
+                name="accept_terms" required />
               <label class="form-check-label" for="form2Example33">
                 I agree to the <a href="/tos">Terms of Service</a>
               </label>
             </div>
 
             <!-- Submit button -->
-            <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block mb-4">
-              Sign up
-            </button>
+            <div class="form-check d-flex justify-content-center">
+              <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-danger btn-block mb-2">
+                Sign up
+              </button>
+            </div>
           </form>
         </div>
       </div>

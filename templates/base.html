@@ -54,6 +54,8 @@
           <!-- <img src="static/assets/img/logo.png" alt=""> -->
           <h1>Foodle<span>.</span></h1>
         </a>
+        {% block navbar %}
+
         <nav id="navbar" class="navbar z-index-n2	">
           <ul>
             <li><a href="/">Home</a></li>
@@ -86,12 +88,13 @@
             <!-- <li><a href="#contact">Contact</a></li> -->
           </ul>
         </nav><!-- .navbar -->
-  
-        <a class="btn-book-a-table" href="/">Find a Food Bank!</a>
+
         <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
         <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
   
       </div>
+      {% endblock %}
+
     </header><!-- End Header -->
 
     {% with messages = get_flashed_messages(with_categories=true) %}

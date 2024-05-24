@@ -272,6 +272,7 @@ def register():
         confirm_password = request.form.get("confirm_password")
         accept_terms = request.form.get("accept_terms")
         phoneNumber = request.form.get("phoneNumber")
+        
 
         # Validate form data (add your own validation logic)
         if not (
@@ -296,6 +297,12 @@ def register():
             flash("Passwords do not match.", "danger")
             return render_template("register.html")
          # Create a new user instance
+        profile_picture = None
+        profile_picture_file = None  # Initialize the variable
+        if 'profile_picture' in request.files:
+            profile_picture_file = request.files['profile_picture']
+            if profile_picture_file and profile_picture_file.filename != '':  # Check if a file is actually uploaded
+                profile_picture = save_profile_picture(profile_picture_file)
         new_user = User(
             name=name,
             last_name=last_name,
@@ -304,6 +311,8 @@ def register():
             phoneNumber = phoneNumber
         )
         new_user.set_password(password)
+        if profile_picture:
+            new_user.profile_picture = profile_picture
 
         # Save the new user to the database
         db.session.add(new_user)
