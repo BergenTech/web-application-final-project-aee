@@ -314,77 +314,16 @@
             </div>
         </div>
     </div>
-    <div class="card mx-4 mx-md-5 shadow-5-strong" style="margin-top: 50px; margin-bottom: 50px;">
-        <div class="card-body py-5 px-md-4">
-            <div class="text-center">
-                <h4>Need help choosing what to make with your requested items? Try this recipe generating using one of
-                    your items</h4><br>
-                <form action="/profile" method="POST">
-                    <select class="form-select" aria-label="Default select example" name="selected">
-                        <option value="">Choose an Item!</option>
-                        {% for item in requested_items %}
-                        <option value='{{item.item_name}}'>{{item.item_name}}</option>
-                        {% endfor %}
-                    </select><br>
-                    <button type="submit" class="btn btn-outline-success" name="recipe">Look at recipes!</button>
-                </form>
-                <br>
-                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal"
-                    data-bs-target="#exampleModal">
-                    More details
-                </button>
-
-                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabel">test</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                RAHHHHHHHHHHHHHHH
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% if recipes %}
-                {% for thing in recipes %}
-                <button type="button" class="btn btn-light" data-bs-toggle="modal"
-                    data-bs-target="#exampleModal{{ loop.index }}" style="margin-top: 10px;">
-                    {{ thing["title"] }}
-                </button>
-                <div class="modal fade" id="exampleModal{{ loop.index }}" tabindex="-1"
-                    aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabel">{{ thing["title"] }}</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                Serving Size: {{thing["servings"]}} <br><br>
-                                Ingredients: <br>
-                                {{thing.ingredients}} <br><br>
-                                Instructions: <br>
-                                {{thing.instructions}}
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-                {% endif %}
             </div>
         </div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.dropdown-toggle').dropdown();
+    });
+</script>
 
 {%endblock%}

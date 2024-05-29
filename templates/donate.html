@@ -154,28 +154,28 @@
       </div>
       <div class="half right cf">
         <input type="text" id="desc" name="desc" placeholder="Description" required>
-
-        <select class="form-select" aria-label="Default select example" name="bank"
-          style="border-color:white; padding: 15px; color:#757575; margin-top:1em; border-radius:8px">
+       
+        <select class="form-select" aria-label="Default select example" name="bank" style="border-color:white; padding: 15px; color:#757575; margin-top:1em; border-radius:8px">
           <option value="">Choose Bank</option>
           <option value="default">Default</option>
           <option value="second">Second</option>
-        </select>
+        </select> 
+        
+        
 
       </div>
 
       <input type="submit" value="Submit" id="input-submit" style="font-size:20px; padding:10px; width:150px; margin-top: 29px;">
     </form>
     <br><br><br>
-
-    <!--{% if donation_success %}
+</section>
+{%endblock%}
+    <!-- {% if donation_success %}
     <p class="success-message">Thank you for your donation! Your contribution will make a difference.</p>
 {% endif %}
 {% if error_message %}
     <p class="error-message">{{ error_message }}</p>
 {% endif %}
-</section>
-{% endblock %}
-```
+ ---!>
 
-This code now applies rounded corners to all form inputs and buttons for a more consistent and visually appealing design.
+{% endblock %}

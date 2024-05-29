@@ -1,7 +1,6 @@
 #list of issues: 
 #profile picture unavalible when account is first created, needs to be reuploaded to work (REGISTER)
 #Modals on profile.html for recipes do not work (ISSUE IS CAUSED BY THE DIV ABOVE IT BUT ONLY THE "CARD" CLASS)
-#fixing thing to show something else if recipe generator does not work
 #
 
 #imports
@@ -63,10 +62,11 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(255), nullable=False)
     email_verification_token = db.Column(db.String(255))
     is_verified = db.Column(db.Boolean, default=False)
-    phoneNumber = db.Column(db.String(255))
     userdonations = db.relationship('Donation', backref='donor', lazy=True)
     profile_picture = db.Column(db.LargeBinary)
     reset_token = db.Column(db.String(255)) 
+    mfa_enabled = db.Column(db.Boolean, default=False)
+    mfa_token = db.Column(db.String(255))
 
 
     donations = db.relationship('Donation', back_populates='user')
@@ -162,6 +162,11 @@ def filter_inventory(selected_tags):
             filtered_inventory.append(item)
     return filtered_inventory
 
+#presentation section
+@app.route('/presentation')
+def presentation():
+    return render_template("presentation.html")
+
 @app.route('/inventory', methods=["POST","GET"])
 @login_required
 def inventory():
@@ -170,25 +175,29 @@ def inventory():
     if request.method == "POST":
         if "food_picked" in request.form:
             item = request.form.get("item")
+            id = int(request.form.get("id"))
             object = Inventory.query.filter_by(name=item).first()
             qty = int(request.form.get("qty"))
             bank = request.form.get("bank")
 
-            if qty > object.qty:
+            if qty == 0:
+                return render_template("inventory.html", invent_list=all_inventory, cart=cart)
+            elif qty > object.qty:
                 flash(f"Please request a less than or equal amount of {item}'s quantity of {object.qty}", "danger")
                 session['cart'] = cart
                 return render_template("inventory.html", invent_list=all_inventory, cart=cart)
-            if cart:
+            elif cart:
                 for selected in cart:
-                    if item == selected[0] and bank == selected[2]:
+                    if id == selected[3]:
                         if (selected[1] + qty) > object.qty:
                             flash(f"Please request a less than or equal amount of {item}'s quantity of {object.qty}", "danger")
                             session['cart'] = cart
+                            return render_template("inventory.html", invent_list=all_inventory, cart=cart) 
                         else:
                             selected[1] = selected[1] + qty
                             session['cart'] = cart
                             return render_template("inventory.html", invent_list=all_inventory, cart=cart) 
-            cart.append([item, qty, bank])
+            cart.append([item, qty, bank, id])
             flash(f"Added {qty} {item} to cart", "success")     
         elif "delete_cart_item" in request.form:
             item_index = int(request.form.get('item_index'))
@@ -243,6 +252,11 @@ def checkout():
                     new_request = Request(item_name=item[0], quantity=item[1], email=current_user.email)
                     db.session.add(new_request)
                     db.session.commit()
+                    
+                    old = Inventory.query.get(item[3])
+                    old.qty -= int(item[1])
+                    db.session.commit()
+                    
                     # send_donation_notification_to_admin(new_request)                            
                 except Exception as e:
                     print('Error:', str(e))
@@ -271,8 +285,8 @@ def register():
         password = request.form.get("password")
         confirm_password = request.form.get("confirm_password")
         accept_terms = request.form.get("accept_terms")
-        phoneNumber = request.form.get("phoneNumber")
-        
+        mfa_enabled = bool(request.form.get("mfa_enabled"))  # Get the MFA checkbox value
+   
 
         # Validate form data (add your own validation logic)
         if not (
@@ -308,7 +322,7 @@ def register():
             last_name=last_name,
             email=email,
             email_verification_token=generate_verification_token(),
-            phoneNumber = phoneNumber
+            mfa_enabled=mfa_enabled
         )
         new_user.set_password(password)
         if profile_picture:
@@ -334,8 +348,15 @@ def login():
         
         if user and user.check_password(password):
             if not user.email_verification_token:
+                if user.mfa_enabled:
+                        mfa_token = generate_verification_token()
+                        user.mfa_token = mfa_token
+                        db.session.commit()
+                        session['mfa_user_id'] = user.id
+                        return redirect(url_for('mfa_verify'))
+                else:
                     login_user(user)
-                    session['user_ID'] =user.id
+                    session['user_ID'] = user.id
                     flash("Logged in successfully!", "success")
                     return redirect(url_for('index'))
             else:

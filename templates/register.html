@@ -15,7 +15,7 @@
       <div class="row d-flex justify-content-center">
         <div class="col-lg-8">
           <h2 class="fw-bold mb-5">Sign up now</h2>
-          <form method="POST" action="/register">
+          <form method="POST" action="/register" enctype="multipart/form-data">
             <!-- 2 column grid layout with text inputs for the first and last names -->
             <div class="row">
               <div class="col-md-6 mb-2">
@@ -60,8 +60,14 @@
               <label class="form-label" for="profile_picture">Profile Picture (optional)</label>
             </div>
 
-            <!-- Checkbox -->
+            <div class="form-check d-flex justify-content-center mb-2">
+              <input type="checkbox" class="form-check-input me-2" id="enableMFA" name="enable_mfa">
+              <label class="form-check-label" for="enableMFA">Enable Multi-Factor Authentication (MFA)</label>
+            </div>
 
+
+            <!-- Checkbox -->
+            
             <div class="form-check d-flex justify-content-center mb-2">
               <input class="form-check-input me-2" type="checkbox" value="accepted" id="form2Example33"
                 name="accept_terms" required />

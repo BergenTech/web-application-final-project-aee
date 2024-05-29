@@ -1619,6 +1619,12 @@ section {
   color: var(--color-primary);
 }
 
+.hero h3{
+  font-size: 40px;
+  color: var(--color-secondary);
+  font-family: var(--font-primary);
+}
+
 .hero p {
   color: #4f4f5a;
   font-weight: 400;
