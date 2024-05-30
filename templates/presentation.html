@@ -3,58 +3,41 @@
 {%block content%}
 
 <section id="hero" class="hero d-flex align-items-center section-bg">
-    <div class="container">
-        <h2>Dive Deep Into The Foodle Website</h2>
-        <h3 style="margin-bottom:20px">Developers: Elise Wizemann, Ece Berrak, Andrea Silva</h3>
+  <div class="container">
+    <div class="row justify-content-between gy-5">
+      <div class="col-lg-5 order-2 order-lg-1 d-flex flex-column justify-content-center align-items-center align-items-lg-start text-center text-lg-start">
+        <h2 data-aos="fade-up">Deeper Dive<br>Into Foodle</h2>
+        <p data-aos="fade-up" data-aos-delay="100">Developed by: Elise Wizemann, Ece Berrak, and Andrea Silva</p>
         <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
-            <a href="/" class="btn-book-a-table">Return to Home</a>
+          {% if not current_user.is_authenticated %}
+          <a href="/register" class="btn-book-a-table">Create an Account</a>
+          {% else %}
+          <a href="/profile" class="btn-book-a-table">View Your Profile</a>
+          {% endif %}          
+          <a href="/" class="btn-book-a-table" style="margin-left:10px">Return to Home</a>
         </div>
+      </div>
+      <div class="col-lg-5 order-1 order-lg-2 text-center text-lg-start">
+        <img src="https://png.pngtree.com/png-vector/20230808/ourmid/pngtree-grocery-bag-clipart-grocery-bag-with-vegetables-cartoon-vector-png-image_6866175.png" class="img-fluid" alt="" data-aos="zoom-out" data-aos-delay="300" width="50%">
+      </div>
     </div>
+  </div>
 </section>
 
-<!--Intro-->
-<section id="about" class="about">
-    <div class="container" data-aos="fade-up">
-      <div class="section-header">
-        <p><span>Introduction</span></p>
-      </div>
-      <p class="fst-italic">...</p>
-    </div>
-</section>
 
-<!--Overview-->
-<section id="about" class="about">
-    <div class="container" data-aos="fade-up">
-      <div class="section-header">
-        <p><span>Overview</span></p>
-      </div>
-      <p class="fst-italic">...</p>
-    </div>
-</section>
 
 <!--
 Intro: 
 - "Introduction is engaging, clearly introduces team members -, and succinctly 
 states the project title - and objective."
 - Developers: Elise Wizemann, Ece Berrak, Andrea Silva -
-- Foodle was developed with the goal of providing an easier way to 
-donate to food banks and request food from foodbanks. The current systems, 
-which are few, are complicated and not user friendly. The end goal is to
-create a user friendly system in order to help those who face food insecurity,
-and encourage people to donate to those in need.
-- Maybe add like bad reviews or something to prove our point? Def need a pic on one side
+- ...
+- *prob needs pic or smth
 -----
 Overview:
 - "Provides a concise and comprehensive summary of the project and 
 clearly highlights innovative features."
-- This website creates a user friendly environment with simple and protected
-user creation, as well as a profile page which documents user information,
-donations, food recieved, and contains recipies for users. 
-A donate page is available for those who are using the
-site to donate, only saving new food options once a food bank approves the
-arrival of the donation. The inventory page is where a logged in user can
-request food by adding it to their cart. Once again, changes are saved
-after pick up. By using admin approval we reduce false database information.
+- ...
 -----
 Live Demo:
 - "Excellent demonstration of critical features, effectively showing 

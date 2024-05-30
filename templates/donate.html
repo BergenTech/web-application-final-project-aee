@@ -26,6 +26,7 @@
     max-width: 600px;
     text-align: center;
     margin: 20px auto;
+  }
 
     input,
     textarea {
@@ -39,27 +40,31 @@
       box-shadow: (0 1px 1px rgba(black, 0.1));
       resize: none;
       border-radius: 8px; /* Rounded corners */
-
-      &:focus {
+    }
+      input:focus,
+      textarea:focus {
         box-shadow: 0 0px 2px rgba(rgba(206, 18, 18, 0.8), 1) !important;
       }
-    }
+    
 
     #input-submit {
       color: white;
       background: rgba(206, 18, 18);
       cursor: pointer;
       border-radius: 8px; /* Rounded corners */
-
-      &:hover {
-        box-shadow: (0 1px 1px 1px rgba(#aaa, 0.6));
-      }
-    }
-
-    textarea {
-      height: 126px;
-    }
+      margin-top: 1em;
+      padding: 10px;
+      width: 150px;
+      font-size: 20px;
   }
+  #input-submit:hover {
+    box-shadow: 0 1px 1px 1px rgba(170, 170, 170, 0.6);
+  }
+
+  textarea {
+    height: 126px;
+  }
+  
 
 
   .half {
@@ -135,16 +140,30 @@
         <input type="text" id="item_name" name="item_name" placeholder="Name" required>
         <input type="number" id="quantity" name="quantity" placeholder="Quantity">
         <div style="text-align: left;">
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle btn-lg" type="button" id="dropdownMenuButton"
-              data-bs-toggle="dropdown" aria-expanded="false" style="margin-top: 18px; border-radius:8px; padding:9px;">
+          <!-- <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle btn-lg" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style="margin-top: 18px; border-radius:8px; padding:9px;">
               Include tags
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               {% for tag in ("Vegan|Vegetarian|Gluten-free|Dairy-free|Nut-free|Non-GMO|Sugar-free|Halal|Kosher").split("|") %}
               <li>
                 <label class="dropdown-item">
-                  <input type="checkbox" class="form-check-input" name="selected_tags" value="{{tag}}"> {{tag}}
+                  <input type="checkbox" class="form-check-input" name="selected_tags" value="{{ tag }}"> {{ tag }}
+                </label>
+              </li>
+              {% endfor %}
+            </ul>
+          </div> -->
+          <div class="">
+            <button class="" type="button" id="dropdownMenuButton"
+              data-bs-toggle="dropdown" aria-expanded="false" style="margin-top: 18px; border-radius:8px; padding:9px;">
+              Include tags
+            </button>
+            <ul class="" aria-labelledby="dropdownMenuButton" style="max-height: 160px; overflow-y: auto;  padding: 10px;">
+              {% for tag in ("Vegan|Vegetarian|Gluten-free|Dairy-free|Nut-free|Non-GMO|Sugar-free|Halal|Kosher").split("|") %}
+              <li  style="border-bottom: 1px solid #ddd; padding: 5px 0;">
+                <label class="dropdown-item">
+                  <input type="checkbox" class="" name="selected_tags" value="{{tag}}"> {{tag}}
                 </label>
               </li>
               {% endfor %}
@@ -152,6 +171,10 @@
           </div>
         </div>
       </div>
+
+
+
+      
       <div class="half right cf">
         <input type="text" id="desc" name="desc" placeholder="Description" required>
        
@@ -167,15 +190,17 @@
 
       <input type="submit" value="Submit" id="input-submit" style="font-size:20px; padding:10px; width:150px; margin-top: 29px;">
     </form>
+    
     <br><br><br>
 </section>
-{%endblock%}
-    <!-- {% if donation_success %}
+
+{% if donation_success %}
     <p class="success-message">Thank you for your donation! Your contribution will make a difference.</p>
 {% endif %}
 {% if error_message %}
     <p class="error-message">{{ error_message }}</p>
 {% endif %}
- ---!>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
 
-{% endblock %}
+{%endblock%}
