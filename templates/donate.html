@@ -48,14 +48,15 @@
     
 
     #input-submit {
-      color: white;
-      background: rgba(206, 18, 18);
+      background-color: #ce1212;
+      border-color: #ce1212;
+      color:white;
       cursor: pointer;
       border-radius: 8px; /* Rounded corners */
-      margin-top: 1em;
+      margin-top: 20px;
       padding: 10px;
-      width: 150px;
-      font-size: 20px;
+      width: 120px;
+      font-size: 18px;
   }
   #input-submit:hover {
     box-shadow: 0 1px 1px 1px rgba(170, 170, 170, 0.6);
@@ -64,8 +65,6 @@
   textarea {
     height: 126px;
   }
-  
-
 
   .half {
     float: left;
@@ -108,6 +107,17 @@
     max-height: 200px;
     overflow-y: auto;
   }
+
+/* Include tags items */
+.dropdown-item {
+  cursor: pointer;
+  color: #333;
+  border-radius: 8px;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
 </style>
 
 {% endblock %}
@@ -154,12 +164,12 @@
               {% endfor %}
             </ul>
           </div> -->
-          <div class="">
+          <div>
             <button class="" type="button" id="dropdownMenuButton"
-              data-bs-toggle="dropdown" aria-expanded="false" style="margin-top: 18px; border-radius:8px; padding:9px;">
+              data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 8px; margin-top: 18px; padding: 8px; width: 130px; font-size: 18px;">
               Include tags
             </button>
-            <ul class="" aria-labelledby="dropdownMenuButton" style="max-height: 160px; overflow-y: auto;  padding: 10px;">
+            <ul class="" aria-labelledby="dropdownMenuButton" style="max-height: 160px; overflow-y: auto;  padding: 9px;">
               {% for tag in ("Vegan|Vegetarian|Gluten-free|Dairy-free|Nut-free|Non-GMO|Sugar-free|Halal|Kosher").split("|") %}
               <li  style="border-bottom: 1px solid #ddd; padding: 5px 0;">
                 <label class="dropdown-item">
@@ -188,7 +198,7 @@
 
       </div>
 
-      <input type="submit" value="Submit" id="input-submit" style="font-size:20px; padding:10px; width:150px; margin-top: 29px;">
+      <input type="submit" value="Submit" id="input-submit">
     </form>
     
     <br><br><br>
