@@ -669,6 +669,5 @@ def upload():
 def tos():
     return render_template("tos.html")
 
-# if __name__ == "__main__":
-#     app.secret_key = "super_secret_key" 
-#     app.run(debug=True, port="1000")
+if __name__ == "__main__":
+    app.run()
