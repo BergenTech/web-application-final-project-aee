@@ -396,7 +396,7 @@ def forgot_password():
 def send_reset_email(email, token):
     token=token
     
-    reset_link = f"https://63hsl2h0-1000.use.devtunnels.ms/reset-password/{token}"
+    reset_link = f"https://foodle.bergentechcs.org/reset-password/{token}"
     msg = Message("Password Reset Request", recipients=[email])
     msg.body = f'Click the link to reset your password: {reset_link}'
     mail.send(msg)
