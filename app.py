@@ -33,6 +33,7 @@ login_manager.login_view = 'login' #specify the login route
 # Set custom messages
 login_manager.login_message = "Unauthorized Access! Please log in!"
 login_manager.login_message_category = "danger"
+app.secret_key = "super_secret_key" 
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
@@ -142,7 +143,7 @@ def verify_email(token):
 # Send a Verification Email:
 def send_verification_email(user):
     verification_link = (
-        f"https://63hsl2h0-1000.use.devtunnels.ms/verify_email/{user.email_verification_token}"
+        f"https://foodle.bergentechcs.org/verify_email/{user.email_verification_token}"
     )
     msg = Message("Verify Your Email", recipients=[user.email])
     msg.body = f"Click the following link to verify your email: {verification_link}"
